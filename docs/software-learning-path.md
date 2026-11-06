@@ -1,6 +1,6 @@
 # 機器人軟體開發的學習路線
 
-> 由使用者的 Heptabase 筆記轉換而來（轉換日期：2026-11-06，Asia/Taipei）。文中價格與連結的查核日期以內文為準（多為 2026-11-02）。
+> 由使用者的 Heptabase 筆記轉換而來（轉換日期：2026-11-06，Asia/Taipei）。文中連結的查核日期以內文為準（多為 2026-11-02）。
 
 相關參考：[硬體路線](hardware-learning-path.md)、[機器人學知識路線](robotics-theory-learning-path.md)、[進度](../STATUS.md)。
 

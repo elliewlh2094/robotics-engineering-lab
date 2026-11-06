@@ -1,6 +1,6 @@
 # 機器人硬體的學習路線
 
-> 由使用者的 Heptabase 筆記轉換而來（轉換日期：2026-11-06，Asia/Taipei）。文中價格與連結的查核日期以內文為準（多為 2026-11-02）。
+> 由使用者的 Heptabase 筆記轉換而來（轉換日期：2026-11-06，Asia/Taipei）。文中連結的查核日期以內文為準（多為 2026-11-02）。
 
 相關參考：[軟體路線](software-learning-path.md)、[機器人學知識路線](robotics-theory-learning-path.md)、[進度](../STATUS.md)。
 
@@ -15,7 +15,7 @@
 
 - **目標深度**：做到「能自己組裝、能自己除錯」就好，不走 PCB 設計或電機控制器開發。
 
-- **查詢與連結驗證日期**：2026-11-02（Asia/Taipei）。價格也是這天查的，會變動。
+- **查詢與連結驗證日期**：2026-11-02（Asia/Taipei）。
 
 - **時數全部是推測**，以「沒碰過電子／MCU」為起點估計。
 
@@ -29,7 +29,7 @@
     - 馬達驅動：3S／12V 用 **TB6612**，韌體設 `USE_BTS7960_MOTOR_DRIVER`（2-PWM 模式）。避免 L298N（會發熱），優先選 MOSFET 驅動。
     - 光達：**LD19**。不建議新手用 RPLIDAR A1／A2。RPLIDAR C1 也在支援清單。
     - 馬達：12V、150–200 RPM、帶霍爾編碼器的有刷減速馬達。
-  - 其他：帶編碼器減速馬達 ×2（例如 JGB37-520 或 37D 磁編碼器馬達）、LD19（台灣買得到的是 LDROBOT D500 開發套件）、3S 電池、降壓模組、底盤。
+  - 其他：帶編碼器減速馬達 ×2（例如 JGB37-520 或 37D 磁編碼器馬達）、LD19（LDROBOT D500 開發套件）、3S 電池、降壓模組、底盤。
   - **一體板選項**：Waveshare General Driver for Robots，一塊板整合 ESP32、TB6612、QMI8658 IMU、AK09918 磁力計、INA219 電壓電流計，還有 LD19 接頭（來源：linorobot2_hardware wiki）。**只能做 2WD**。可以省掉分開的驅動、IMU 與大部分接線；代價是 H3／H4 自己接線的練習變少（推測）。
 
 - **選修第二台：SO-101 手臂**（[SO-ARM100 repo](https://github.com/TheRobotStudio/SO-ARM100)、[LeRobot SO-101 文件](https://huggingface.co/docs/lerobot/so101)），只用在 H8。
@@ -132,7 +132,7 @@
 - [SO-ARM100 repo](https://github.com/TheRobotStudio/SO-ARM100)（含 SO-101）
 - [LeRobot SO-101 文件](https://huggingface.co/docs/lerobot/so101)：組裝、馬達 ID 設定、校正
 
-- **購買與電源**：台灣賣的 PRO 套件 follower 是 **12V** STS3215（C018／C047），不是官方預設的 7.4V C001，要接 12V 電源；leader 仍是 7.4V，兩種電壓不能混接（來源：機器人王國商品頁、iCShop 搜尋摘要、Seeed wiki，2026-11-02 查）。自己有 3D 印表機就買不含列印件的版本（差 NT$2,000）。
+- **電源**：PRO 套件 follower 是 **12V** STS3215（C018／C047），不是官方預設的 7.4V C001，要接 12V 電源；leader 仍是 7.4V，兩種電壓不能混接（來源：Seeed wiki，2026-11-02 查）。
 
 - **能做到**：
   - [ ] 完成組裝與校正，用 leader arm 遙控 follower arm
@@ -161,53 +161,18 @@
   - [ ] Pi 透過 MAX485 模組用 PyModbus 讀寫一台 Modbus RTU 裝置（或另一顆 ESP32 模擬的 slave）的 register
   - [ ] AMR-1 把電量與狀態用 MQTT 發布到 Mosquitto broker，另一台電腦訂閱得到
 
-## 台灣零件價格表（查詢日期：2026-11-02）
-
-| 項目 | 價格（NT$） | 通路／來源 |
-| --- | --- | --- |
-| LDROBOT D500（= LD19 開發套件，wiki 推薦） | 3,819 | [iCShop](https://www.icshop.com.tw/categories/sbc-lidar) |
-| RPLIDAR C1（也支援） | 2,879 | [iCShop](https://www.icshop.com.tw/categories/sbc-lidar)；[飆機器人](https://shop.playrobot.com/products/ssl0092) 3,150（查詢時缺貨） |
-| 12V 37D 磁編碼器減速馬達 | 620／顆 | [iCShop](https://www.icshop.com.tw/categories/gear-motors) |
-| JGB37-520 編碼器減速馬達 | 約 200–400／顆（未重新確認） | 露天、蝦皮（[飛比比價](https://feebee.com.tw/s/jgb37-520/)） |
-| TB6612FNG 馬達驅動 | 210 | [iCShop](https://www.icshop.com.tw/categories/motor-drive) |
-| MPU6050 GY-521 IMU | 75–120 | [機器人王國](https://robotkingdom.com.tw/product/mpu-6050-imu-6dof-gy-521/) 120；[聯騰](https://www.ltc.com.tw/products/mtardgy521) 75 |
-| Waveshare General Driver for Robots（一體板，只能 2WD） | 1,209 | [iCShop](https://www.icshop.com.tw/products?query=General%20Driver%20for%20Robots) |
-| Raspberry Pi Pico 2 | 219 | [iCShop](https://www.icshop.com.tw/products?query=Pico%202) |
-| ESP32-S3-DevKitC-1 | 499–899 | [iCShop](https://www.icshop.com.tw/products/368030501811) |
-| Raspberry Pi 4（4GB） | 3,900 | [iCShop](https://www.icshop.com.tw/categories/raspberry-pi-boards) |
-| Raspberry Pi 5（可選） | 2,499–12,500（搜尋摘要顯示售完） | [iCShop](https://www.icshop.com.tw/categories/raspberry-pi-boards) |
-| 手持示波器 FNIRSI DSO152／DSO-TC3 | 約 600–1,900 | [BigGo 比價](https://biggo.com.tw/s/fnirsi-dso%20152) |
-| Arduino Starter Kit | 4,150 | [iCShop](https://www.icshop.com.tw/pages/arduino-project-best)；其他套件見[飆機器人](https://shop.playrobot.com/categories/kits-arduino) |
-| SN65HVD230 CAN 收發器模組（H9） | 85–95 | [露天](https://www.ruten.com.tw/item/22310151497173/)；[廣華電子 CJMCU-230](https://shop.cpu.com.tw/product/51686/info/) 160 |
-| MCP2515 + TJA1050 CAN 模組（H9） | 150 | [iCShop](https://www.icshop.com.tw/categories/wired) |
-| MAX485 TTL 轉 RS-485 模組（H9） | 15 | [iCShop](https://www.icshop.com.tw/categories/wired) |
-| Waveshare 樹莓派 RS485／CAN 擴充板（H9） | 389 | [iCShop](https://www.icshop.com.tw/categories/wired) |
-| SO-101 PRO 套件，不含列印件（H8） | 9,500（含稅 9,975），有庫存 | [機器人王國](https://robotkingdom.com.tw/product/so-arm101-ai-arm-kit-pro/) |
-| SO-101 PRO 套件，含列印件（H8） | 11,500（含稅 12,075），有庫存 | [機器人王國](https://robotkingdom.com.tw/product/so-arm101-ai-arm-kit-pro-3d/) |
-| SO-101 已組裝校正（H8） | 13,500（含稅 14,175）；另有附 2 顆 PW315 相機的組裝版 17,200 | 機器人王國 |
-| SO-101 PRO（Seeed，H8） | 9,300–11,000，標示售完／下單後訂貨 | [iCShop](https://www.icshop.com.tw/products/368040500233) |
-| Feetech STS3215 伺服（備品，含 12V C018／C047） | 640／顆 | [機器人王國](https://robotkingdom.com.tw/product/feetech-st-3215-c018-c047-servo/) |
-
-- **AMR-1 核心零件粗估**：Pi 4 4GB 3,900 + Pico 2 219 + TB6612 210 + 37D 馬達 620 ×2 + D500 3,819 + MPU6050 約 100 ≈ **NT$9,500**（推測，不含電池、充電器、降壓模組、底盤與線材）。改用 Waveshare 一體板取代 Pico 2 + TB6612 + IMU，核心約 NT$10,200（推測）。
-- **AMR-1 估計總價**：約 NT$11,000–12,000（推測）。電池、充電器、降壓模組、底盤、線材約 NT$1,500–2,500（推測，未逐項查價）。
-- **現成平台參考（不自組時）**：[TurtleBot3（艾迪麥）](https://idminer.com.tw/product/turtlebot3/) 需詢價；[ZanRobot ROS SharkBot](https://zanrobot.com/shop/ros_sharkbot/) 18,500；[ROSKY2（iCShop）](https://www.icshop.com.tw/products/368030200711) 35,000。
-
 ## 限制／注意
 
 - **馬達驅動照韌體 wiki**：3S／12V 用 TB6612，韌體設 `USE_BTS7960_MOTOR_DRIVER`（2-PWM 模式）；避免 L298N（會發熱），優先選 MOSFET 驅動（來源：[linorobot2_hardware wiki](https://github.com/linorobot/linorobot2_hardware/wiki)，2026-11-02 查）。TB6612 連續電流約 1.2A（SparkFun Hookup Guide），換更大的馬達或更高電壓時再確認堵轉電流（推測）。
-- **光達選 LD19**：wiki 不建議新手用 RPLIDAR A1／A2。台灣通路賣的是 LDROBOT D500（LD19 開發套件）；RPLIDAR C1 也支援，便宜 NT$940。
+- **光達選 LD19**：wiki 不建議新手用 RPLIDAR A1／A2。LDROBOT D500 是 LD19 開發套件；RPLIDAR C1 也支援。
 - **Waveshare General Driver for Robots 只能做 2WD**：之後想改 4WD 或麥克納姆輪就要換板。
-- **SO-101 的 12V follower**：台灣 PRO 套件的 follower 是 12V C018／C047，和官方 7.4V C001 不同，要配 12V 電源；不要拿 7.4V 伺服接 12V。
+- **SO-101 的 12V follower**：PRO 套件的 follower 是 12V C018／C047，和官方 7.4V C001 不同，要配 12V 電源；不要拿 7.4V 伺服接 12V。
 - **ESP32-S3**：linorobot2_hardware jazzy README 已列出 `esp32s3` 環境（2026-11-02 查），但 IMU、驅動腳位要照 config 檔自己對應。
 - **ESP32 的 TWAI 需要外接 CAN 收發器**（如 SN65HVD230）才能接上 CAN bus。
-- **SO-101 價格 2026-11-02 已重新確認**：機器人王國有庫存；iCShop 的價格與售完狀態只來自搜尋摘要。
-- **Raspberry Pi 5 價格區間沒有按 RAM 拆開**，售完狀態來自搜尋摘要；Linorobot2 用 Pi 4 4GB 就夠跑（Pi 4 是最低需求）。
-- **還沒查到台灣價格**：JGB37-520（表中為舊的比價範圍）、Waveshare TP200／MC200 底盤（iCShop 是代理，需洽詢）、3S 電池與充電器。
-- **零件價格會變動**，露天／蝦皮價格差異大；表中是 2026-11-02 看到的價格。
+- **Raspberry Pi**：Linorobot2 用 Pi 4 4GB 就夠跑（Pi 4 是最低需求）。
 - **時數都是推測**。
 
 ## 來源
 
 - 共同載具：[Linorobot2](https://github.com/linorobot/linorobot2)、[linorobot2_hardware](https://github.com/linorobot/linorobot2_hardware)、[linorobot2_hardware wiki](https://github.com/linorobot/linorobot2_hardware/wiki)、[Linorobot2 docs](https://linorobot.github.io/linorobot2/)
 - 教材：SparkFun、Adafruit、Random Nerd Tutorials、DroneBot Workshop、toptechboy、Onshape、Teaching Tech、OrcaSlicer、CSS Electronics、Espressif ESP-IDF、Linux kernel docs、Modbus Organization、PyModbus、HiveMQ、Eclipse Mosquitto（連結見各階段）
-- 價格：iCShop、飆機器人、露天、廣華電子、飛比、BigGo、機器人王國、聯騰、艾迪麥、ZanRobot（連結見價格表）
