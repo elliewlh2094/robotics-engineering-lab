@@ -13,7 +13,7 @@ Claude Code 請先讀這份文件。若你是從 `CLAUDE.md` 進來的，內容�
 
 ## 使用者背景
 
-- 台灣 CS 碩士生。
+- CS 碩士生。
 - **已有**：Python、ROS 2 基礎（沒用過 Nav2、MoveIt、`ros2_control`）、Gazebo、PID 理論、手動飛無人機。
 - **缺口**：C/C++ 幾乎從零、電子／電路沒碰過、沒組過實體機器人、沒碰過 LiPo、Kalman filter 較弱。
 
