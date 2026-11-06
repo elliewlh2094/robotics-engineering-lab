@@ -6,15 +6,14 @@
 
 ## 這份文件在做什麼
 
-- **四個目標**：
+- **三個目標**：
   1. 能寫控制系統
   2. 能做出想要功能的機器人
   3. 理解演算法的原理、優點與限制
-  4. 涵蓋台灣職缺要求的技能
 
 - **這份文件只寫「HOW TO WRITE」**：怎麼把機器人軟體寫出來、測好、跑起來（Python／C++、Linux、Git、CMake、測試、Docker、CI、ROS 2、Nav2、`ros2_control`、模擬器、開源貢獻）。演算法背後的數學與硬體接線不在這裡展開。
 
-- **定位**：機器人軟體工程師，主攻 AMR。
+- **學習重點**：主攻 AMR。
 
 - **查詢與連結驗證日期**：2026-11-02（Asia/Taipei）。所有連結都在這天用 curl／fetch 確認可開啟。
 
@@ -163,7 +162,7 @@
   - 能做到：SO-101 在模擬中用 MoveIt 規劃 pick-and-place；有手臂的話，用 so101_ros2 的 hardware plugin 讓實機跟著同一條軌跡跑，說得出它的 `read()`／`write()` 和 DiffBot 的差異。
 
 - **AMR-1 自寫 ros2_control hardware interface（延伸挑戰，~30h，推測）**：Linorobot2 本身沒有這層，這是自己加的專案，沒有現成教材。推測的做法：寫一個 `SystemInterface`，`write()` 把 `diff_drive_controller` 的輪速命令送給 MCU，`read()` 讀回編碼器輪速；MCU 韌體可能要改成接受輪速、回傳輪速，而不是直接吃 `/cmd_vel`。參考 DiffBot example_2 與 Articulated Robotics 的實機篇。
-  - 能做到（推測）：AMR-1 改用 `diff_drive_controller` 控制，用鍵盤開得動，`/odom` 與原韌體版本差不多；可直接對應「`ros2_control` 底盤控制」這種職缺要求。
+  - 能做到（推測）：AMR-1 改用 `diff_drive_controller` 控制，用鍵盤開得動，`/odom` 與原韌體版本差不多。
 
 - **OpenCV（選修，~20h）**：[OpenCV Bootcamp](https://courses.opencv.org/courses/course-v1:OpenCV+Bootcamp+CV0/about)。
   - 能做到：AMR-1 加相機，偵測 ArUco 或顏色標記並發布位置。
@@ -177,38 +176,6 @@
   - [micro-ROS](https://micro.ros.org/)
   - 能做到：讀懂並修改 AMR-1 的 `linorobot2_hardware` 韌體（例如調整 PID 參數或新增一個 topic）。
 
-## 職缺技能對照
-
-依據：2026-10-30 從 104、LinkedIn、Yourator 整理的 49 筆台灣機器人職缺（括號內為出現次數）；另有陽程科技「AMR／AGV 導航與運動控制工程師」（[台灣就業通](https://job.taiwanjobs.gov.tw/internet/index/JobDetail.aspx?EMPLOYER_ID=106980&HIRE_ID=14731853&R2=11)）明確要求 URDF、`ros2_control` 底盤控制、Nav2 全域／局部規劃。
-
-**這份文件涵蓋**
-
-| 技能（次數） | 階段 |
-| --- | --- |
-| C／C++ (41) | S1、S6 |
-| ROS／ROS 2 (35) | S3–S5 |
-| Python (34) | S1、S6 |
-| 模擬器 (21) | S4、S8 |
-| Linux (19) | S1 |
-| SLAM／定位／導航／規劃的實作 (15) | S5、S6 |
-| Git (12) | S1 |
-| 作品集／開源 (8) | S7 |
-| 感測器融合的實作 (7) | S5（`robot_localization`）、S6（EKF） |
-| MoveIt／ros2_control (7) | S4（DiffBot demo）、S8（SO-101 + so101_ros2、MoveIt、AMR-1 自寫 hardware interface） |
-| Docker／CI (6) | S2 |
-| URDF (4) | S3 |
-| BT／FSM (3) | S5 |
-| CV／點雲 (14) | S8（選修，只到 OpenCV 入門） |
-| MCU (8) | S8（選修，只到讀改韌體） |
-
-**這份文件不涵蓋**
-
-- 控制理論、運動學／IK 的推導、SLAM 與濾波的數學（屬於 WHY，見 [機器人學知識路線](robotics-theory-learning-path.md)）
-- 電路、接線、馬達驅動、工業通訊 CAN／Modbus（屬於硬體實作，見 [硬體路線](hardware-learning-path.md)）
-- RL／IL／VLA (14)、PyTorch (10)、Jetson／CUDA／TensorRT (10)
-- PLC／MES／WMS (5)、PX4 (4)、Qt (3)、機械手臂品牌 (3)、DDS／gRPC
-- 英文 (9)
-
 ## 限制／注意
 
 - **時數都是推測**：沒有來源提供這個組合的實際時程。
@@ -217,7 +184,7 @@
 - **Articulated Robotics 的專案總覽仍是 Foxy 時代**：模擬與 `ros2_control` 篇已更新到 Jazzy，其他篇照做時注意版本差異。
 - **Isaac Sim 需要 RTX 等級 GPU**：沒有合適顯卡就改用 MuJoCo 或只用 Gazebo。
 - **AMR-1 的硬體照韌體 wiki 建議**：3S／12V 用 TB6612（韌體設 `USE_BTS7960_MOTOR_DRIVER` 的 2-PWM 模式）、光達用 LD19（來源：[linorobot2_hardware wiki](https://github.com/linorobot/linorobot2_hardware/wiki)，2026-11-02 查）。電池、底盤還沒定。
-- **Linorobot2 沒有 ros2_control**：S4 的 `ros2_control` 靠 DiffBot demo；AMR-1 本身要對應「`ros2_control` 底盤控制」職缺，得做 S8 的自寫 hardware interface（推測的做法，沒有現成教材）。
+- **Linorobot2 沒有 ros2_control**：S4 的 `ros2_control` 靠 DiffBot demo；若要在 AMR-1 上練習 `ros2_control` 底盤控制，得做 S8 的自寫 hardware interface（推測的做法，沒有現成教材）。
 - **adoodevv/so101_ros2 很新**：2026-11-02 查時 14 ★，只支援 Jazzy；實機上可能遇到未知問題（推測）。
 
 ## 來源
@@ -226,4 +193,3 @@
 - 共同載具：[Linorobot2](https://github.com/linorobot/linorobot2)、[linorobot2_hardware](https://github.com/linorobot/linorobot2_hardware)、[linorobot2_hardware wiki](https://github.com/linorobot/linorobot2_hardware/wiki)、[Linorobot2 docs](https://linorobot.github.io/linorobot2/)
 - SO-101 ROS 2：[ros-physical-ai/ros2_so_arm](https://github.com/ros-physical-ai/ros2_so_arm)、[adoodevv/so101_ros2](https://github.com/adoodevv/so101_ros2)
 - 官方文件：[ROS 2 Jazzy](https://docs.ros.org/en/jazzy/Tutorials.html)、[Nav2](https://docs.nav2.org/jazzy/getting_started/)、[ros2_control](https://control.ros.org/jazzy/doc/ros2_control_demos/doc/index.html)、[Gazebo](https://gazebosim.org/docs/harmonic/getstarted/)
-- 職缺：2026-10-30 從 104、LinkedIn、Yourator 整理的 49 筆台灣機器人職缺；[陽程科技 AMR／AGV 職缺](https://job.taiwanjobs.gov.tw/internet/index/JobDetail.aspx?EMPLOYER_ID=106980&HIRE_ID=14731853&R2=11)

@@ -6,11 +6,10 @@
 
 ## 這份文件在做什麼
 
-- **四個目標**：
+- **三個目標**：
   1. 能寫控制系統
   2. 能做出想要功能的機器人
   3. 理解演算法的原理、優點與限制
-  4. 涵蓋台灣職缺要求的技能
 
 - **這份文件只寫「WHY」**：演算法為什麼這樣設計、假設是什麼、什麼情況會失效（數學、運動學、控制、機率機器人學、路徑規劃、機器人學習）。程式工程與接線不在這裡展開。
 
@@ -113,28 +112,6 @@
   - [ ] 說明 RL／IL 和 K3–K5 傳統方法的取捨：資料需求、安全性、sim-to-real gap
   - [ ] （選）用 LeRobot 在 SO-101 上錄示範資料並訓練一個模仿學習策略
 
-## 職缺技能對照
-
-依據：2026-10-30 從 104、LinkedIn、Yourator 整理的 49 筆台灣機器人職缺（括號內為出現次數）。
-
-**這份文件涵蓋**
-
-| 技能（次數） | 階段 |
-| --- | --- |
-| 控制理論 PID／MPC／LQR (15) | K3（MPC 只到概念） |
-| SLAM／定位／導航／路徑規劃的原理 (15) | K4、K5 |
-| RL／IL／VLA (14) | K6（選修） |
-| 運動學／動力學／IK (8) | K2（動力學只到概念） |
-| 感測融合／Kalman (7) | K4 |
-| PyTorch／深度學習 (10) | K6（部分，透過 Deep RL Course 與 LeRobot） |
-
-**這份文件不涵蓋**
-
-- C／C++、Python、ROS 2、Linux、Git、Docker／CI、模擬器等寫程式的技能（見 [軟體路線](software-learning-path.md)）
-- MCU、工業通訊、示波器、配線等硬體技能（見 [硬體路線](hardware-learning-path.md)）
-- 電腦視覺／點雲的理論 (14)、Jetson／TensorRT (10)、PLC／MES／WMS (5)、PX4 (4)
-- 英文 (9)
-
 ## 限制／注意
 
 - **時數都是推測**。
@@ -148,4 +125,3 @@
 
 - 教科書與課程：Lynch & Park《Modern Robotics》、林沛群（臺大 OCW、個人課程頁）、楊谷洋（陽明交大 OCW）、Steve Brunton、Roger Labbe、Cyrill Stachniss、Steven LaValle、李宏毅、Hugging Face、OpenAI Spinning Up、MIT Underactuated Robotics（連結見各階段）
 - 共同載具：[Linorobot2](https://github.com/linorobot/linorobot2)、[linorobot2_hardware](https://github.com/linorobot/linorobot2_hardware)
-- 職缺：2026-10-30 從 104、LinkedIn、Yourator 整理的 49 筆台灣機器人職缺

@@ -6,11 +6,10 @@
 
 ## 這份文件在做什麼
 
-- **四個目標**：
+- **三個目標**：
   1. 能寫控制系統
   2. 能做出想要功能的機器人
   3. 理解演算法的原理、優點與限制
-  4. 涵蓋台灣職缺要求的技能
 
 - **這份文件只寫「HOW TO WIRE」**：怎麼把機器人接起來、組起來、量得出問題（電路、電源與電池安全、MCU、馬達與感測器、示波器、CAD／3D 列印、整機組裝、工業通訊）。軟體架構與演算法數學不在這裡展開。
 
@@ -140,7 +139,7 @@
 
 ## H9 工業通訊：CAN、Modbus、MQTT（選修，~20h）
 
-- **為什麼加這段**：49 筆台灣職缺中有 12 筆要求工業通訊（CAN／EtherCAT／Modbus／RS-485），主要出現在人形、手臂、AGV 職缺。EtherCAT 需要專用主站與從站硬體，不排入（推測）。
+- EtherCAT 需要專用主站與從站硬體，不排入（推測）。
 
 - **CAN**：
   - [CSS Electronics：CAN Bus Explained – A Simple Intro](https://www.csselectronics.com/pages/can-bus-simple-intro-tutorial)：frame、ID、仲裁、終端電阻
@@ -193,27 +192,6 @@
 - **AMR-1 估計總價**：約 NT$11,000–12,000（推測）。電池、充電器、降壓模組、底盤、線材約 NT$1,500–2,500（推測，未逐項查價）。
 - **現成平台參考（不自組時）**：[TurtleBot3（艾迪麥）](https://idminer.com.tw/product/turtlebot3/) 需詢價；[ZanRobot ROS SharkBot](https://zanrobot.com/shop/ros_sharkbot/) 18,500；[ROSKY2（iCShop）](https://www.icshop.com.tw/products/368030200711) 35,000。
 
-## 職缺技能對照
-
-依據：2026-10-30 從 104、LinkedIn、Yourator 整理的 49 筆台灣機器人職缺（括號內為出現次數）。
-
-**這份文件涵蓋**
-
-| 技能（次數） | 階段 |
-| --- | --- |
-| MCU／嵌入式／韌體 (8) | H3、H7（不含 RTOS） |
-| 工業通訊 CAN／Modbus／RS-485 (12) | H9（選修；不含 EtherCAT） |
-| 電控／硬體：示波器、配線 (4) | H1、H2、H5、H7（不含 PCB、BLDC／FOC） |
-| 感測器硬體端（IMU、編碼器、LiDAR） | H4、H7（融合演算法不在本文件） |
-| 作品集：實機 (8) | H7、H8 |
-
-**這份文件不涵蓋**
-
-- RTOS、PCB 設計、BLDC／FOC 馬達控制、EtherCAT
-- PLC／MES／WMS (5)、Jetson／CUDA／TensorRT (10)、PX4 (4)
-- 程式語言、ROS 2、Nav2、模擬器、Docker／CI 等軟體技能（見 [軟體路線](software-learning-path.md)）
-- 控制理論、運動學、SLAM 與濾波的數學（見 [機器人學知識路線](robotics-theory-learning-path.md)）
-
 ## 限制／注意
 
 - **馬達驅動照韌體 wiki**：3S／12V 用 TB6612，韌體設 `USE_BTS7960_MOTOR_DRIVER`（2-PWM 模式）；避免 L298N（會發熱），優先選 MOSFET 驅動（來源：[linorobot2_hardware wiki](https://github.com/linorobot/linorobot2_hardware/wiki)，2026-11-02 查）。TB6612 連續電流約 1.2A（SparkFun Hookup Guide），換更大的馬達或更高電壓時再確認堵轉電流（推測）。
@@ -233,4 +211,3 @@
 - 共同載具：[Linorobot2](https://github.com/linorobot/linorobot2)、[linorobot2_hardware](https://github.com/linorobot/linorobot2_hardware)、[linorobot2_hardware wiki](https://github.com/linorobot/linorobot2_hardware/wiki)、[Linorobot2 docs](https://linorobot.github.io/linorobot2/)
 - 教材：SparkFun、Adafruit、Random Nerd Tutorials、DroneBot Workshop、toptechboy、Onshape、Teaching Tech、OrcaSlicer、CSS Electronics、Espressif ESP-IDF、Linux kernel docs、Modbus Organization、PyModbus、HiveMQ、Eclipse Mosquitto（連結見各階段）
 - 價格：iCShop、飆機器人、露天、廣華電子、飛比、BigGo、機器人王國、聯騰、艾迪麥、ZanRobot（連結見價格表）
-- 職缺：2026-10-30 從 104、LinkedIn、Yourator 整理的 49 筆台灣機器人職缺
