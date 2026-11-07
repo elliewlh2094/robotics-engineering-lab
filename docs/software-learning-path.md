@@ -48,21 +48,19 @@
 | S3 | ROS 2 基礎（rclcpp／rclpy、URDF、測試） | 必修 | ~60h |
 | S4 | Gazebo 模擬（AMR-1 的 DiffDrive plugin）+ `ros2_control`（DiffBot demo） | 必修 | ~50h |
 | S5 | 定位與導航（SLAM Toolbox、`robot_localization`、Nav2、BT） | 必修 | ~80h |
-| S9 | 多旋翼：Crazyswarm2 控制 Crazyflie（ROS 2） | 選修 | ~30h |
-| S10 | 多旋翼：PX4 `gz_x500` 與 ROS 2 offboard | 選修 | ~30h |
+| S9 | 多旋翼：Crazyswarm2 與 PX4 offboard | 選修 | ~40h |
 | S6 | 自己寫演算法：C++ 重寫 PID／EKF、Nav2 plugin | 必修 | ~50h |
 | S7 | 開源貢獻：一個被 merge 的 PR | 必修 | ~30h |
 | S8 | 延伸：MoveIt 2 + SO-101 `ros2_control`、OpenCV、Isaac Sim／MuJoCo、嵌入式 C + micro-ROS、AMR-1 自寫 `ros2_control` hardware interface | 選修 | ~160h |
-| S11 | 多旋翼進階：實體 Holybro X500 V2 與 Raspberry Pi | 選修 | ~25h |
 
-必修合計約 410h，選修約 160h，多旋翼選修另約 85h（推測）。S9、S10、S11 的編號接在 S8 之後，不重排 S1–S8。表上的順序才是建議的學習順序：S5 之後做 S9、S10；S6 不依賴多旋翼。S11 有實體機再做。
+必修合計約 410h，選修約 200h（推測）。S8 約 160h，S9 約 40h。S9 的編號接在 S8 之後，不重排 S1–S8。建議 S5 做完就做 S9；S6 不依賴它。
 
 ## 這條路線的核心做法
 
 - **先寫和 ROS 無關的純 C++ 函式庫，再包 ROS adapter**（來源：[Robotisim roadmap](https://robotisim.com/blog/software-engineer-to-robotics-engineer-roadmap) §5.3）。
 - **profile before rewriting；Python 版與 C++ 版用 tolerance 比對**（來源：Robotisim §5）。
 - **不必先學 C 再學 C++**：C 放到最後的選修嵌入式階段（推測）。
-- **先跑通別人的 baseline（Linorobot2／Nav2 預設），再換成自己寫的元件**（來源：Robotisim §8）。多旋翼同樣先跑 Crazyswarm2 的模擬與 PX4 的 offboard 範例，再換成自己的 out-of-tree 控制器或估測器。
+- **先跑通別人的 baseline（Linorobot2／Nav2 預設），再換成自己寫的元件**（來源：Robotisim §8）。多旋翼先跑 Crazyswarm2 的模擬與 PX4 的 offboard 範例。自寫估測器在知識路線 K4。
 
 ## S1 程式基礎（必修，~100h）
 
@@ -141,34 +139,23 @@
   - [ ] 同一套設定搬到實機 AMR-1 上跑通
   - [ ] 跑完 Robotisim §12 的情境（窄道、動態障礙、目標在障礙內等），記錄失敗案例
 
-## S9 Crazyflie 與 Crazyswarm2（選修，~30h）
+## S9 多旋翼：Crazyswarm2 與 PX4 offboard（選修，~40h）
 
-建議 S5 做完就做。先看過 AMR-1 那條「ROS 2 node 到下位機」的路，再看飛行控制器。數學假設在知識路線 K4，這裡寫程式與把模擬跑起來。
+建議 S5 做完就做。先看過 AMR-1 那條「ROS 2 node 到下位機」的路。這段沒有 Nav2：ROS 2 送到設定點為止，閉環在飛行控制器裡。串級與估測見知識路線 K3、K4。組裝與電池見硬體路線 H10。
 
-- [Crazyswarm2](https://github.com/IMRCLab/crazyswarm2)、[installation](https://imrclab.github.io/crazyswarm2/installation.html)、[overview](https://imrclab.github.io/crazyswarm2/overview.html)
-- [Adding an estimator or controller](https://www.bitcraze.io/2023/02/adding-an-estimator-or-controller/)：out-of-tree build 怎麼掛控制器與估測器
-- [Out of tree build](https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/development/oot/)
-- [State estimation](https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/functional-areas/sensor-to-control/state_estimators/)
+先跑 Crazyswarm2 的模擬，再視手上有沒有實機 Crazyflie 2.1+。PX4 接在後面。
 
-- **能做到**：
-  - [ ] 用 Crazyswarm2 在模擬裡起飛，飛幾個位置設定點再降落。說得出模擬跑的是 Crazyflie 韌體（software-in-the-loop），ROS 介面和實機相同
-  - [ ] 指出 ROS 2 的指令怎麼進到飛行控制器，對照 AMR-1 的 `/cmd_vel` 進到 micro-ROS
-  - [ ] 用 out-of-tree build 掛上自己的控制器或狀態估測器，主韌體樹維持上游版本。估測器的狀態、預測與量測用知識路線 K4 的說法講一遍
-
-## S10 PX4：`gz_x500` 與 ROS 2 offboard（選修，~30h）
-
-做完 S9 再做。載具是 Gazebo 的 Holybro X500（`gz_x500`）。這段沒有 Nav2：ROS 2 送到位置設定點為止，閉環在 PX4 的串級控制器。
-
+- [Crazyswarm2 usage](https://imrclab.github.io/crazyswarm2/usage.html)：`ros2 launch crazyflie launch.py backend:=sim`。模擬以 software-in-the-loop 跑 Crazyflie 韌體（[overview](https://imrclab.github.io/crazyswarm2/overview.html)）。
+- 同一支 node 換到實機 Crazyflie 2.1+ 做自主飛行時，要有無線電傳輸器（Crazyradio 這類）和定位擴充板（例如 Flow deck）。沒有這兩樣，就停在模擬。
 - [Gazebo Vehicles](https://docs.px4.io/main/en/sim_gazebo_gz/vehicles)：`make px4_sitl gz_x500`
-- [uXRCE-DDS](https://docs.px4.io/main/en/middleware/uxrce_dds)
-- [ROS 2 Offboard Control](https://docs.px4.io/main/en/ros2/offboard_control)
-- [Controller Diagrams](https://docs.px4.io/main/en/flight_stack/controller_diagrams)
-- [Using PX4's Navigation Filter (EKF2)](https://docs.px4.io/main/en/advanced_config/tuning_the_ecl_ekf)
+- [uXRCE-DDS](https://docs.px4.io/main/en/middleware/uxrce_dds)：模擬的 client 走 UDP 8888，agent 用 `MicroXRCEAgent udp4 -p 8888`
+- [ROS 2 Offboard Control](https://docs.px4.io/main/en/ros2/offboard_control)：rclcpp node 持續送 `OffboardControlMode` 與 `TrajectorySetpoint`。流量低於大約 2 Hz 會退出 offboard；官方範例是 100 ms 送一次
+- **實體 X500 V2（選）**：[Raspberry Pi Companion](https://docs.px4.io/main/en/companion_computer/pixhawk_rpi) 把 Pi 接到 TELEM2，`UXRCE_DDS_CFG=102`，在 Pi 上跑 `sudo MicroXRCEAgent serial --dev /dev/serial0 -b 921600`，沿用模擬那支 node。實機要留能接手手動飛行的辦法
 
 - **能做到**：
-  - [ ] `gz_x500` 在 Gazebo 起飛。ROS 2 node 經 uXRCE-DDS 送 offboard 位置設定點，飛一段再降落。從官方 offboard 範例改起，範例本身標出來源
-  - [ ] 對照控制器圖，說得出位置、速度、姿態、角速度各吃什麼設定點（哪幾層是 P、哪幾層是 PID，見知識路線 K3）
-  - [ ] 說得出狀態估測是飛行控制器上的 EKF2。ROS 2 這層送設定點，不在 node 裡再融合一次感測器
+  - [ ] 一支 ROS 2 node 讓 Crazyflie 起飛、經過三個航點、降落。先用 `backend:=sim`。換實機時說得出還要無線電傳輸器與定位擴充板
+  - [ ] 一支 rclcpp node 讓 `gz_x500` 以 offboard 飛一個正方形。`OffboardControlMode` 與 `TrajectorySetpoint` 的發送不低於 2 Hz。範例程式標出來源
+  - [ ] （選）同一支 offboard node 在 X500 V2 的 Raspberry Pi 上跑起來
 
 ## S6 自己寫演算法元件（必修，~50h）
 
@@ -215,18 +202,6 @@
   - [micro-ROS](https://micro.ros.org/)
   - 能做到：讀懂並修改 AMR-1 的 `linorobot2_hardware` 韌體（例如調整 PID 參數或新增一個 topic）。
 
-## S11 實體 X500 V2 與 Raspberry Pi（選修進階，~25h）
-
-有實體 Holybro X500 V2（Pixhawk 6C）再做。軟體這段接在 S10 後面：同一類 offboard 位置設定點，從 Gazebo 搬到伴隨電腦。組裝、4S 鋰聚合物電池與戶外飛行見硬體路線 H12。
-
-- [Holybro X500 V2 + Pixhawk 6C](https://docs.px4.io/main/en/frames_multicopter/holybro_x500v2_pixhawk6c)
-- [Raspberry Pi Companion with Pixhawk](https://docs.px4.io/main/en/companion_computer/pixhawk_rpi)：uXRCE-DDS 走 TELEM2（`UXRCE_DDS_CFG = 102`）
-- [Optical Flow](https://docs.px4.io/main/en/sensor/optical_flow)：之後可加 Holybro H-Flow 或 ARK Flow
-
-- **能做到**：
-  - [ ] Raspberry Pi 經 TELEM2 的 uXRCE-DDS，送出和 S10 同一類的 offboard 位置設定點。官方 offboard 文件提醒：實機要留能接手手動飛行的辦法
-  - [ ] （更後面）接上 H-Flow 或 ARK Flow，說得出室內光流提供的是速度量測，戶外定點則靠 GPS。融合仍在 EKF2
-
 ## 限制／注意
 
 - **時數都是推測**：沒有來源提供這個組合的實際時程。
@@ -237,7 +212,7 @@
 - **AMR-1 的硬體照韌體 wiki 建議**：3S／12V 用 TB6612（韌體設 `USE_BTS7960_MOTOR_DRIVER` 的 2-PWM 模式）、光達用 LD19（來源：[linorobot2_hardware wiki](https://github.com/linorobot/linorobot2_hardware/wiki)，2026-11-02 查）。電池、底盤還沒定。
 - **Linorobot2 沒有 ros2_control**：S4 的 `ros2_control` 靠 DiffBot demo；若要在 AMR-1 上練習 `ros2_control` 底盤控制，得做 S8 的自寫 hardware interface（推測的做法，沒有現成教材）。
 - **adoodevv/so101_ros2 很新**：2026-11-02 查時 14 ★，只支援 Jazzy；實機上可能遇到未知問題（推測）。
-- **多旋翼不用 Nav2**：S9–S11 練的是 ROS 2 到飛行控制器，不是把 S5 的 2D 導航作業搬過去。
+- **多旋翼不用 Nav2**：S9 練的是 ROS 2 到飛行控制器，不是把 S5 的 2D 導航作業搬過去。
 - **PX4 官方 offboard 範例的版本**：該頁寫在 Ubuntu 20.04、ROS 2 Foxy、PX4 v1.14 上測過，編譯片段也有 Humble（2026-11-07 查）。本路線其他階段是 Jazzy，`px4_msgs` 的分支要自己對。
 - **Crazyswarm2 的 Jazzy**：安裝文件把 Ubuntu 24.04 + ROS 2 Jazzy 列進對照表（2026-11-07 查）。模擬要另建 Crazyflie 韌體的 Python bindings，文件寫的測試版本是 2025.02。
 - **ESP-FLY 不在這份文件練**：沒有 ROS 2、沒有模擬。焊接見硬體路線 H10。
