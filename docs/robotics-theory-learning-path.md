@@ -13,9 +13,9 @@
 
 - **這份文件只寫「WHY」**：演算法為什麼這樣設計、假設是什麼、什麼情況會失效（數學、運動學、控制、機率機器人學、路徑規劃、機器人學習）。程式工程與接線不在這裡展開。
 
-- **讀法**：每個階段讀完都回到 AMR-1 上，說得出「這個演算法在 AMR-1 上哪裡用到、什麼條件下會壞掉」。
+- **讀法**：每個階段讀完都回到 AMR-1 上，說得出「這個演算法在 AMR-1 上哪裡用到、什麼條件下會壞掉」。K3、K4 的多旋翼補充另外回到 Crazyflie 或 PX4。AMR-1 仍是每個階段的第一個對照。
 
-- **查詢與連結驗證日期**：2026-11-02（Asia/Taipei）。
+- **查詢與連結驗證日期**：既有連結 2026-11-02（Asia/Taipei）。多旋翼相關連結 2026-11-07 另查過，可以開啟。
 
 - **時數全部是推測**，以「CS 碩士、已有 ML 與 PID 理論基礎、Kalman filter 較弱」為起點估計。
 
@@ -30,6 +30,11 @@
 
 - **選修第二台：SO-101 手臂**，用在 K2 的多關節運動學與 K6 的模仿學習。
 
+- **選修多旋翼**：不取代 AMR-1。AMR-1 已經有輪速 PID 與融合里程計的 EKF；多旋翼補上 AMR-1 沒有的兩塊，而且直接對上 Kalman filter 較弱這件事。
+  - **串級控制**在 K3：PX4 的位置、速度、姿態、角速度。由內而外調，從角速度環開始。
+  - **extended Kalman filter** 在 K4：先讀 Crazyflie 的估測器（預設是 complementary filter，接上定位擴充板才改用 EKF），再在軟體路線 S9 用 out-of-tree build 掛上自己的版本。PX4 的 EKF2 是第二個對照，用在 `gz_x500` 與實體 Holybro X500 V2。
+  - 第一台是 Crazyflie 2.1+。PX4 的 Gazebo 模型 `gz_x500` 排在軟體路線的導航階段之後。實體 X500 V2 與焊接用的 ESP-FLY 見硬體路線。ESP-FLY 沒有模擬、也沒有 ROS 2，不用它練這裡的估測。
+
 ## 路線總覽
 
 | 階段 | 內容 | 必修／選修 | 時數（推測） |
@@ -41,7 +46,7 @@
 | K5 | 路徑規劃（圖搜尋、取樣式規劃） | 必修 | ~30h |
 | K6 | 機器人學習：IL／RL／VLA | 選修 | ~60h |
 
-必修合計約 220h（推測）。
+必修合計約 220h（推測）。K3、K4 的多旋翼補充是選修，不另開階段，也不加進必修時數。
 
 ## K1 數學複習（必修，~30h）
 
@@ -65,6 +70,7 @@
   - [ ] 推導 AMR-1 差速驅動的正／逆運動學（輪速 ↔ 線速度、角速度），並說明非完整約束（nonholonomic）為什麼讓它不能橫移
   - [ ] 解釋輪式里程計為什麼會隨距離累積誤差（打滑、輪徑誤差）
   - [ ] （選）用 Ch 4–6 推 SO-101 的正運動學與數值逆運動學
+  - [ ] （選）說明多旋翼的水平加速度來自機體傾斜，位置環的輸出會進到姿態設定點。對照 AMR-1：輪速可以直接對應平面速度（推測）
 
 ## K3 控制（必修，~50h）
 
@@ -72,10 +78,14 @@
 
 - **英文補充**：[Steve Brunton Control Bootcamp](https://www.youtube.com/playlist?list=PLMrJAkhIeNNR20Mz-VpzgfQs5zrYi085m)：狀態空間、可控／可觀性、LQR、Kalman filter 的控制觀點
 
+- **多旋翼補充（選修）**：PX4 的多旋翼控制器是串級。位置環是 P，輸出速度設定點；速度環是 PID，輸出加速度，再換成推力與姿態設定點；姿態環輸出角速度設定點；最內層角速度環是 PID。估測來自 EKF2。基本調參指南要求照這個順序調，從角速度環開始，因為內環會影響外面每一層（來源：[Controller Diagrams](https://docs.px4.io/main/en/flight_stack/controller_diagrams)、[Multicopter PID Tuning Guide (Manual/Basic)](https://docs.px4.io/main/en/config_mc/pid_tuning_guide_multicopter_basic)，2026-11-07 查）。程式與 `gz_x500` 的 offboard 在軟體路線 S10。
+
 - **能做到**：
   - [ ] 把 AMR-1 單顆輪子的馬達建模成一階系統，解釋 PID 三個增益各自影響什麼（上升時間、超越量、穩態誤差）
   - [ ] 說得出輪速 PID 在低速、電池電壓下降、PWM 飽和時會出什麼問題
   - [ ] 解釋 LQR 與 PID 的取捨，以及 Nav2 路徑追蹤控制器（如 Regulated Pure Pursuit、MPPI）背後的想法（推測）
+  - [ ] （選）畫出多旋翼的位置 → 速度 → 姿態 → 角速度。標出哪幾層是 P、哪幾層是 PID
+  - [ ] （選）說明為什麼從角速度環開始調。內環在振，外環會看到什麼
 
 ## K4 機率機器人學（必修，~60h）
 
@@ -87,10 +97,15 @@
 
 - **參考書（付費，非必要）**：Thrun, Burgard, Fox《Probabilistic Robotics》。Stachniss 的 SLAM 課程大致沿用這本書的架構（推測）。
 
+- **多旋翼補充（選修）**：Crazyflie 預設估測器是 complementary filter（姿態與高度，不含水平位置）。Flow deck v2、Loco positioning deck、Lighthouse deck、動作捕捉擴充板會改用 extended Kalman filter（來源：[State estimation](https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/functional-areas/sensor-to-control/state_estimators/)）。讀 [Explaining Kalman Filters with the Crazyflie](https://www.bitcraze.io/2024/01/explaining-kalman-filters-with-the-crazyflie/)：預測用運動模型，光流量測要配高度才變成速度，非線性就在工作點取 Jacobian。自己把估測器掛進韌體是軟體路線 S9 的 out-of-tree build；這裡要說得出那個版本的假設哪裡會破。PX4 的第二個對照是 [EKF2](https://docs.px4.io/main/en/advanced_config/tuning_the_ecl_ekf)：IMU 只用在預測，觀測來自 GPS、光流、氣壓這類其他感測器（2026-11-07 查）。
+
 - **能做到**：
   - [ ] 說明 AMR-1 的 EKF 為什麼要融合輪式里程計與 IMU，各自的雜訊特性與失效情境
   - [ ] 解釋 AMCL（粒子濾波定位）在長走廊、對稱環境為什麼容易失敗
   - [ ] 解釋 SLAM Toolbox 用的 graph-based SLAM：前端 scan matching、後端位姿圖最佳化、loop closure 的作用
+  - [ ] （選）說明 Crazyflie 什麼時候仍用 complementary filter、什麼擴充板才改用 EKF，各補進哪一種量測
+  - [ ] （選）指出至少一個會讓 Crazyflie 這個 EKF 失準的情況（例如光流下方幾乎沒有紋理）。對照 AMR-1 那個融合輪式里程計與 IMU 的 EKF：感測器不同，都是預測加重測
+  - [ ] （選）說明 PX4 的 EKF2 把 IMU 用在預測，觀測來自其他感測器
 
 ## K5 路徑規劃（必修，~30h）
 
@@ -120,8 +135,12 @@
 - **Stachniss SLAM Course 是 2013 年的錄影**：理論沒過時，但現代 SLAM 實作（如 SLAM Toolbox）細節要另查官方文件。
 - **李宏毅 DRL 是 2018 年的課**：適合打基礎，近年的 VLA 與 diffusion policy 不在內。
 - **Isaac Lab 需要 RTX 等級 GPU**。
+- **多旋翼的串級不是四層完整 PID**：PX4 控制器圖寫位置環是 P、速度環是 PID、角速度環是 PID。把四層都說成同一個 PID 會對錯調參順序。
+- **Crazyflie 開機不是就在跑 EKF**：沒有定位擴充板時，預設是 complementary filter。只讀 Kalman 的教科書、不對照這份韌體在什麼條件下才切換，補不滿估測這一塊。
+- **外掛估測器的程式在軟體路線 S9**：這份文件只要求講得出狀態、預測、量測與失效條件。
 
 ## 來源
 
 - 教科書與課程：Lynch & Park《Modern Robotics》、林沛群（臺大 OCW、個人課程頁）、楊谷洋（陽明交大 OCW）、Steve Brunton、Roger Labbe、Cyrill Stachniss、Steven LaValle、李宏毅、Hugging Face、OpenAI Spinning Up、MIT Underactuated Robotics（連結見各階段）
 - 共同載具：[Linorobot2](https://github.com/linorobot/linorobot2)、[linorobot2_hardware](https://github.com/linorobot/linorobot2_hardware)
+- 多旋翼：[Crazyflie state estimation](https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/functional-areas/sensor-to-control/state_estimators/)、[Explaining Kalman Filters with the Crazyflie](https://www.bitcraze.io/2024/01/explaining-kalman-filters-with-the-crazyflie/)、[PX4 controller diagrams](https://docs.px4.io/main/en/flight_stack/controller_diagrams)、[PX4 multicopter PID tuning (basic)](https://docs.px4.io/main/en/config_mc/pid_tuning_guide_multicopter_basic)、[PX4 EKF2](https://docs.px4.io/main/en/advanced_config/tuning_the_ecl_ekf)
