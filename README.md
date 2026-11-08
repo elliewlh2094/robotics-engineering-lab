@@ -15,6 +15,7 @@
 | `docs/` | 三條學習路線的參考文件（給人與程式代理讀） |
 | `STATUS.md` | 各階段「能做到」的真實進度 |
 | `AGENTS.md` | 給 Claude Code、Codex 等程式代理的約定 |
+| `practice/<階段>/` | `/practice` skill 產生的路徑計畫、弱點紀錄與練習，見下方「用代理規劃練習」 |
 | 小練習目錄（例如運動學函式庫） | 直接放在本儲存庫 |
 | 較完整專案的 submodule | 各自有獨立 Git 歷史；上游專案當依賴安裝，不要整包搬進來 |
 
@@ -26,6 +27,15 @@
 - [docs 目錄說明](docs/README.md)
 
 進度請看 [STATUS.md](STATUS.md)。
+
+## 用代理規劃練習
+
+在 Claude Code 輸入 `/practice <階段代號>`（例如 `/practice S1`），代理會依該階段的學習路線，把 `STATUS.md` 的檢查點往回拆成可動手、可自動驗收的練習，邊走邊細化。skill 定義在 [.claude/skills/practice/](.claude/skills/practice/SKILL.md)。
+
+- 每個階段一個目錄 `practice/<階段>/`，第一次使用時才建立，內含 `PLAN.md`（路徑計畫）、`WEAKNESSES.md`（弱點紀錄）與 `exercises/`。
+- 卡住時代理會分級提示，不直接給答案；說「投降」才會給答案，並記進弱點紀錄。
+- 從其他路線借學的步驟，不算那條路線的進度。
+- `STATUS.md` 只在使用者確認後才更新。
 
 ## 共同練習載具
 
