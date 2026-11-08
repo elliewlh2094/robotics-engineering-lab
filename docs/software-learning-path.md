@@ -13,9 +13,9 @@
 
 - **這份文件只寫「HOW TO WRITE」**：怎麼把機器人軟體寫出來、測好、跑起來（Python／C++、Linux、Git、CMake、測試、Docker、CI、ROS 2、Nav2、`ros2_control`、模擬器、開源貢獻）。演算法背後的數學與硬體接線不在這裡展開。
 
-- **學習重點**：主攻 AMR。多旋翼是選修載具，用來練飛行控制與狀態估測，不取代地面導航。
+- **學習重點**：主攻 AMR。多旋翼是選修載具，用來練飛行控制與狀態估測，不取代地面導航。四足是另一個選修載具，用來練腿式步態、`ros2_control` 的位置控制，以及把同一套 SLAM／Nav2 搬到會打滑的平台，對應 S10，不取代 AMR-1。
 
-- **查詢與連結驗證日期**：既有連結 2026-11-02（Asia/Taipei）。多旋翼相關連結 2026-11-07 另查過，可以開啟。
+- **查詢與連結驗證日期**：既有連結 2026-11-02（Asia/Taipei）。多旋翼相關連結 2026-11-07 另查過，可以開啟。四足相關連結 2026-11-08 另查過，可以開啟。
 
 - **時數全部是推測**，以「已會 Python、有 ROS 2 + Gazebo 經驗、C++ 幾乎從零」為起點估計。
 
@@ -37,7 +37,9 @@
   - **ESP-FLY**（Seeed，XIAO ESP32-S3）只放硬體路線，當焊接練習。README 寫韌體改自 [ESP-Drone](https://github.com/espressif/esp-drone) 與 Circuit Digest 的修改版；ESP-Drone 的飛行控制核心來自 Crazyflie 韌體 2021.01。沒有 ROS 2、沒有模擬（來源：[Co-Create_ESP-FLY](https://github.com/Seeed-Projects/Co-Create_ESP-FLY)，2026-11-07 查）。
   - 考慮過 Duckiedrone DD24 與 Betaflight 競速機，沒有放進路線：這邊要能外掛自寫控制器與狀態估測，並且接上 ROS 2，這兩台沒有一起滿足（推測）。
 
-- 地面階段的「能做到」以 AMR-1（或它的 Gazebo 版本）驗收。多旋翼階段以 Crazyflie 或 PX4 的 `gz_x500` 驗收。
+- **選修四足：Mini Pupper 2**。不取代 AMR-1。把 S5 的 SLAM Toolbox 與 Nav2 放到會打滑的腿上，並讀一套實機在用的步態與 `ros2_control` 位置控制器。程式在 [mini_pupper_ros](https://github.com/mangdangroboticsclub/mini_pupper_ros) 的 `ros2-jazzy` 分支（Apache-2.0），對應 Ubuntu 24.04、ROS 2 Jazzy、Gazebo Harmonic。組裝與電源見硬體路線 H11，腿的運動學見知識路線 K2。
+
+- 地面階段的「能做到」以 AMR-1（或它的 Gazebo 版本）驗收。多旋翼階段以 Crazyflie 或 PX4 的 `gz_x500` 驗收。四足階段以 Mini Pupper 2 驗收，對應 S10。
 
 ## 路線總覽
 
@@ -49,18 +51,19 @@
 | S4 | Gazebo 模擬（AMR-1 的 DiffDrive plugin）+ `ros2_control`（DiffBot demo） | 必修 | ~50h |
 | S5 | 定位與導航（SLAM Toolbox、`robot_localization`、Nav2、BT） | 必修 | ~80h |
 | S9 | 多旋翼：Crazyswarm2 與 PX4 offboard | 選修 | ~40h |
+| S10 | 四足：Mini Pupper 2 + ROS 2 Jazzy | 選修 | ~35h |
 | S6 | 自己寫演算法：C++ 重寫 PID／EKF、Nav2 plugin | 必修 | ~50h |
 | S7 | 開源貢獻：一個被 merge 的 PR | 必修 | ~30h |
 | S8 | 延伸：MoveIt 2 + SO-101 `ros2_control`、OpenCV、Isaac Sim／MuJoCo、嵌入式 C + micro-ROS、AMR-1 自寫 `ros2_control` hardware interface | 選修 | ~160h |
 
-必修合計約 410h，選修約 200h（推測）。S8 約 160h，S9 約 40h。S9 的編號接在 S8 之後，不重排 S1–S8。建議 S5 做完就做 S9；S6 不依賴它。
+必修合計約 410h，選修約 235h（推測）。S8 約 160h，S9 約 40h，S10 約 35h。S9、S10 的編號接在 S8 之後，不重排 S1–S8。建議 S5 做完就可以做 S9 或 S10，兩者互不依賴；S6 也不依賴它們。
 
 ## 這條路線的核心做法
 
 - **先寫和 ROS 無關的純 C++ 函式庫，再包 ROS adapter**（來源：[Robotisim roadmap](https://robotisim.com/blog/software-engineer-to-robotics-engineer-roadmap) §5.3）。
 - **profile before rewriting；Python 版與 C++ 版用 tolerance 比對**（來源：Robotisim §5）。
 - **不必先學 C 再學 C++**：C 放到最後的選修嵌入式階段（推測）。
-- **先跑通別人的 baseline（Linorobot2／Nav2 預設），再換成自己寫的元件**（來源：Robotisim §8）。多旋翼先跑 Crazyswarm2 的模擬與 PX4 的 offboard 範例。自寫估測器在知識路線 K4。
+- **先跑通別人的 baseline（Linorobot2／Nav2 預設），再換成自己寫的元件**（來源：Robotisim §8）。多旋翼先跑 Crazyswarm2 的模擬與 PX4 的 offboard 範例。四足先跑 Mini Pupper 官方的 Gazebo，再讀 `stanford_controller`。自寫估測器在知識路線 K4。
 
 ## S1 程式基礎（必修，~100h）
 
@@ -157,6 +160,26 @@
   - [ ] 一支 rclcpp node 讓 `gz_x500` 以 offboard 飛一個正方形。`OffboardControlMode` 與 `TrajectorySetpoint` 的發送不低於 2 Hz。範例程式標出來源
   - [ ] （選）同一支 offboard node 在 X500 V2 的 Raspberry Pi 上跑起來
 
+## S10 四足：Mini Pupper 2 + ROS 2 Jazzy（選修，~35h）
+
+建議 S5 做完就做，不用先做 S9。這段把 S5 的 SLAM Toolbox 與 Nav2 搬到四足上，對照輪式 AMR-1。步態與關節控制器用上游套件，不要寫成自己的程式。組裝、校正與電源見硬體路線 H11。三關節腿的逆運動學、trot 相位與靜態平衡見知識路線 K2。
+
+先跑官方模擬，再讀實機步態的程式。有實機才把同一套搬上機器。
+
+- [mini_pupper_ros](https://github.com/mangdangroboticsclub/mini_pupper_ros) 的 `ros2-jazzy` 分支，授權 Apache-2.0。README 寫 Ubuntu 24.04 + ROS 2 Jazzy，並列出 Mini Pupper 2 預先做好的系統映像。模擬是 `ros2 launch mini_pupper_simulation gazebo.launch.py`，裡面用 `ros_gz_sim`（Jazzy 對應 Gazebo Harmonic）。2026-06-08 的 [ROS Discourse 公告](https://discourse.openrobotics.org/t/new-ros-2-features-for-mini-pupper-2/50806) 寫這套已支援 Ubuntu 24.04、Jazzy 與 Gazebo Harmonic（2026-11-08 查）。
+- 實機啟動是 `ros2 launch mini_pupper_bringup bringup.launch.py`。這支 launch 會帶起 `stanford_controller`，以及自訂的 `ros2_control` 位置控制器 `mini_pupper_controllers/SimpleQuadrupedController`。步態在 `stanford_controller`（[Stanford Quadruped](https://github.com/stanfordroboticsclub/StanfordQuadruped) 移到 ROS 2 的版本，見該套件 README）。關節命令是十二個位置，不是力矩。`ros2-jazzy` 分支的檔案路徑裡沒有 CHAMP。
+- CHAMP（[chvmp/champ](https://github.com/chvmp/champ)）只掛在舊的 `ros2-humble-champ` 分支：那個分支的 README 標 ROS 2 Humble，`.minipupper.repos` 拉的是 MangDang 自己的 CHAMP 儲存庫。上游 README 的測試清單列到 Ubuntu 22.04 + ROS 2 Humble；GitHub 顯示這個倉庫最後更新是 2024-07-04。可以當第二套步態來讀。要在 Jazzy 上跑，推測得先改。
+- 建圖用 `ros2 launch mini_pupper_slam slam_toolbox.launch.py`（SLAM Toolbox）。同套件的 `slam.launch.py` 是 Cartographer，這條路線不走那支。導航用 `ros2 launch mini_pupper_navigation navigation_smacplanner.launch.py`。導航說明寫 AMCL 的運動模型有依走路時的晃動調過。
+- 感測器驅動是分開的 launch：光達 `lidar_ld06.launch.py`、IMU `imu_interface.launch.py`、伺服 `servo_interface.launch.py`。Jazzy 的整機 bringup 讓伺服走 `ros2_control` 的硬體介面。一次先確認一個感測器，再把整包啟動，做法見硬體路線 H11。
+- [Read the Docs 的 ROS 2 指南](https://minipupperdocs.readthedocs.io/en/latest/guide/ROS2Guide.html)（2026-11-08 查）仍寫堆疊改自 CHAMP，安裝範例是 Ubuntu 22.04 + Humble，Gazebo 套件名是舊的 `mini_pupper_gazebo`。Jazzy 以 `ros2-jazzy` 分支為準。
+
+- **能做到**：
+  - [ ] 在 Gazebo 用官方 `gazebo.launch.py` 讓 Mini Pupper 2 走得動，並說得出程式來自 `mini_pupper_ros` 的 `ros2-jazzy`，不是自己寫的
+  - [ ] 讀過 `stanford_controller` 與 `SimpleQuadrupedController`，說得出 Jazzy 上的步態在前者，關節介面是位置不是力矩
+  - [ ] 說得出 CHAMP 在哪一個舊分支、上游 README 列到哪一版，以及為什麼不把它當 Jazzy 的預設步態
+  - [ ] 用 SLAM Toolbox 建圖、存圖，再用 Nav2 走到一個目標。先做模擬；有實機再做一次
+  - [ ] 對照 AMR-1，說明腿式里程計為什麼更會漂、腳底打滑，以及走路的震動怎麼進到光達
+
 ## S6 自己寫演算法元件（必修，~50h）
 
 - **C++ 重寫 PID／EKF**：
@@ -217,6 +240,10 @@
 - **Crazyswarm2 的 Jazzy**：安裝文件把 Ubuntu 24.04 + ROS 2 Jazzy 列進對照表（2026-11-07 查）。模擬要另建 Crazyflie 韌體的 Python bindings，文件寫的測試版本是 2025.02。
 - **ESP-FLY 不在這份文件練**：沒有 ROS 2、沒有模擬。焊接見硬體路線 H10。
 - **Crazyflie 2.1 的 29 g 是 2.1 資料表**：2.1+ 若有不同的規格表，以那份為準。
+- **Jazzy 上的四足步態不是 CHAMP**：`ros2-jazzy` 的 bringup 啟動 `stanford_controller`，關節介面是位置。Read the Docs 的 ROS 2 指南還停在 CHAMP 與 Humble。照那份指南在 Jazzy 上裝，套件名與分支都會對不上。
+- **Mini Pupper 2 的伺服沒有力矩控制**：規格表寫序列匯流排伺服、有位置回授。`ros2_control` 架構說明也寫實機關節是位置介面。平衡最佳化、模型預測控制、強化學習不要在這台實機上當主線，放在模擬。沒有官方的 MuJoCo 或 Isaac 流程；[強化學習頁](https://minipupperdocs.readthedocs.io/en/latest/guide/ReinforcementLearning.html) 每一節都寫 Will update late（2026-11-08 查）。有速度與力矩回授的 Pro 版本，規格表現在沒有列，這條路線不採用（推測不好取得）。
+- **CHAMP 上游停在 Humble**：README 的測試清單列到 Ubuntu 22.04 + ROS 2 Humble，倉庫最後更新 2024-07-04。把它接到 Jazzy，推測要先改。
+- **四足程式是 Apache-2.0**：`mini_pupper_ros` 與板級支援套件 `mini_pupper_2_bsp` 都是 Apache-2.0。板級支援套件的 README 另外把 `FuelGauge` 列成 GPL，不在 Apache-2.0 裡。機架 CAD 與硬體授權沒有公開，見硬體路線。
 
 ## 來源
 
@@ -225,3 +252,4 @@
 - SO-101 ROS 2：[ros-physical-ai/ros2_so_arm](https://github.com/ros-physical-ai/ros2_so_arm)、[adoodevv/so101_ros2](https://github.com/adoodevv/so101_ros2)
 - 官方文件：[ROS 2 Jazzy](https://docs.ros.org/en/jazzy/Tutorials.html)、[Nav2](https://docs.nav2.org/jazzy/getting_started/)、[ros2_control](https://control.ros.org/jazzy/doc/ros2_control_demos/doc/index.html)、[Gazebo](https://gazebosim.org/docs/harmonic/getstarted/)
 - 多旋翼：[Crazyswarm2](https://github.com/IMRCLab/crazyswarm2)、[Crazyflie out-of-tree](https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/development/oot/)、[Crazyflie state estimation](https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/functional-areas/sensor-to-control/state_estimators/)、[PX4 Gazebo vehicles](https://docs.px4.io/main/en/sim_gazebo_gz/vehicles)、[PX4 uXRCE-DDS](https://docs.px4.io/main/en/middleware/uxrce_dds)、[PX4 ROS 2 offboard](https://docs.px4.io/main/en/ros2/offboard_control)、[PX4 controller diagrams](https://docs.px4.io/main/en/flight_stack/controller_diagrams)、[PX4 EKF2](https://docs.px4.io/main/en/advanced_config/tuning_the_ecl_ekf)、[Holybro X500 V2](https://docs.px4.io/main/en/frames_multicopter/holybro_x500v2_pixhawk6c)、[Raspberry Pi companion](https://docs.px4.io/main/en/companion_computer/pixhawk_rpi)
+- 四足：[mini_pupper_ros（ros2-jazzy）](https://github.com/mangdangroboticsclub/mini_pupper_ros/tree/ros2-jazzy)、[stanford_controller](https://github.com/mangdangroboticsclub/mini_pupper_ros/blob/ros2-jazzy/stanford_controller/README.md)、[ros2_control 架構說明](https://github.com/mangdangroboticsclub/mini_pupper_ros/blob/ros2-jazzy/docs/ros2-control-architecture.md)、[CHAMP](https://github.com/chvmp/champ)、[Mini Pupper 文件](https://minipupperdocs.readthedocs.io/en/latest/)、[ROS Discourse：Mini Pupper 2 的 Jazzy 支援](https://discourse.openrobotics.org/t/new-ros-2-features-for-mini-pupper-2/50806)、[mini_pupper_2_bsp](https://github.com/mangdangroboticsclub/mini_pupper_2_bsp)

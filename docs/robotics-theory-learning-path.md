@@ -13,9 +13,9 @@
 
 - **這份文件只寫「WHY」**：演算法為什麼這樣設計、假設是什麼、什麼情況會失效（數學、運動學、控制、機率機器人學、路徑規劃、機器人學習）。程式工程與接線不在這裡展開。
 
-- **讀法**：每個階段讀完都回到 AMR-1 上，說得出「這個演算法在 AMR-1 上哪裡用到、什麼條件下會壞掉」。K3、K4 的多旋翼補充另外回到 Crazyflie 或 PX4。AMR-1 仍是每個階段的第一個對照。
+- **讀法**：每個階段讀完都回到 AMR-1 上，說得出「這個演算法在 AMR-1 上哪裡用到、什麼條件下會壞掉」。K2 的四足延伸另外回到 Mini Pupper 2。K3、K4 的多旋翼補充另外回到 Crazyflie 或 PX4。AMR-1 仍是每個階段的第一個對照。
 
-- **查詢與連結驗證日期**：既有連結 2026-11-02（Asia/Taipei）。多旋翼相關連結 2026-11-07 另查過，可以開啟。
+- **查詢與連結驗證日期**：既有連結 2026-11-02（Asia/Taipei）。多旋翼相關連結 2026-11-07 另查過，可以開啟。四足相關連結 2026-11-08 另查過，可以開啟。
 
 - **時數全部是推測**，以「CS 碩士、已有 ML 與 PID 理論基礎、Kalman filter 較弱」為起點估計。
 
@@ -35,18 +35,20 @@
   - **extended Kalman filter：先讀再寫**在 K4，選修約 15h。預設估測器是 complementary filter。讀文件與 `kalman_core`，再用 out-of-tree build 先寫 complementary filter、再寫 EKF，兩者比較。PX4 的 EKF2 用來對照感測器延遲。ROS 2 飛行 node 在軟體路線 S9。
   - 第一台是 Crazyflie 2.1+。PX4 的 Gazebo 模型 `gz_x500` 排在軟體路線的導航階段之後。實體 X500 V2 與焊接用的 ESP-FLY 見硬體路線 H10。ESP-FLY 沒有模擬、也沒有 ROS 2，不用它練這裡的估測。
 
+- **選修四足：Mini Pupper 2**。不取代 AMR-1。運動學這一列加一段腿部運動學、步態與靜態平衡，選修約 12h，寫在 K2，不另開階段。伺服只有位置回授，動態平衡不在這台實機上做。軟體見 S10，組裝見 H11。
+
 ## 路線總覽
 
 | 階段 | 內容 | 必修／選修 | 時數（推測） |
 | --- | --- | --- | --- |
 | K1 | 數學複習：線性代數、機率、微分方程 | 必修 | ~30h |
-| K2 | 運動學（剛體運動、正／逆運動學、移動機器人） | 必修 | ~50h |
+| K2 | 運動學（剛體運動、正／逆運動學、移動機器人；四足延伸另計） | 必修 | ~50h |
 | K3 | 控制（PID、狀態空間、LQR） | 必修 | ~50h |
 | K4 | 機率機器人學（貝氏濾波、KF／EKF／PF、SLAM） | 必修 | ~60h |
 | K5 | 路徑規劃（圖搜尋、取樣式規劃） | 必修 | ~30h |
 | K6 | 機器人學習：IL／RL／VLA | 選修 | ~60h |
 
-必修合計約 220h（推測）。K3 的串級調參選修約 10h，K4 的 extended Kalman filter 選修約 15h，都不加進必修，也不另開階段。
+必修合計約 220h（推測）。K2 的四足延伸選修約 12h，K3 的串級調參選修約 10h，K4 的 extended Kalman filter 選修約 15h，都不加進必修，也不另開階段。
 
 ## K1 數學複習（必修，~30h）
 
@@ -66,11 +68,16 @@
   - [臺大 林沛群「機器人學一」](https://ocw.aca.ntu.edu.tw/courses/mooc0031)
   - [陽明交大 楊谷洋「機器人學」](https://ocw.nycu.edu.tw/?course_page=all-course%2Fcollege-of-electrical-and-computer-engineering%2F%E6%A9%9F%E5%99%A8%E4%BA%BA%E5%AD%B8-robotics-105%E5%AD%B8%E5%B9%B4%E5%BA%A6-%E9%9B%BB%E6%A9%9F%E5%B7%A5%E7%A8%8B%E5%AD%B8%E7%B3%BB-%E6%A5%8A%E8%B0%B7%E6%B4%8B%E8%80%81%E5%B8%AB%2Frobot051_intro)
 
+- **四足延伸（選修，~12h）**：AMR-1 是平面差速，SO-101 是手臂。這裡補一條三關節的腿，關節對照 Mini Pupper 2 的外展、髖、膝。教材仍是上面的正／逆運動學。先自己推、用 Python 寫出來，再讀上游的 [`stanford_controller/Kinematics.py`](https://github.com/mangdangroboticsclub/mini_pupper_ros/blob/ros2-jazzy/stanford_controller/stanford_controller/Kinematics.py) 對答案，不要一開始就抄。trot 是對角兩腳一組。靜態平衡看支撐多邊形與質心在地面的投影。這台的伺服沒有力矩控制，動態平衡不在實機上做，見軟體路線 S10。
+
 - **能做到**：
   - [ ] 推導 AMR-1 差速驅動的正／逆運動學（輪速 ↔ 線速度、角速度），並說明非完整約束（nonholonomic）為什麼讓它不能橫移
   - [ ] 解釋輪式里程計為什麼會隨距離累積誤差（打滑、輪徑誤差）
   - [ ] （選）用 Ch 4–6 推 SO-101 的正運動學與數值逆運動學
   - [ ] （選）說明多旋翼的水平加速度來自機體傾斜，位置環的輸出會進到姿態設定點。對照 AMR-1：輪速可以直接對應平面速度（推測）
+  - [ ] （選）推導一條三關節腿的逆運動學，並用 Python 實作。對照 `stanford_controller` 的運動學時標明那是上游程式
+  - [ ] （選）畫出 trot 的相位圖，標出哪一組對角腳在支撐、哪一組在擺動
+  - [ ] （選）說明支撐多邊形是什麼，以及質心投影要落在哪裡機器人才靜態穩定。對照 trot：著地腳只剩兩隻時，這個多邊形變成什麼
 
 ## K3 控制（必修，~50h）
 
@@ -140,9 +147,11 @@
 - **多旋翼的串級不是四層完整 PID**：PX4 控制器圖寫位置環是 P、速度環是 PID、角速度環是 PID。把四層都說成同一個 PID 會對錯調參順序。
 - **Crazyflie 開機不是就在跑 EKF**：沒有定位擴充板時，預設是 complementary filter。只讀 Kalman 的教科書、不對照這份韌體在什麼條件下才切換，補不滿估測這一塊。
 - **外掛估測器寫在 K4**：軟體路線 S9 是 ROS 2 的飛行 node，不在那裡重寫一遍估測器。K4 仍要講得出狀態、預測、量測與失效條件。
+- **四足的 trot 不要當成靜態步態**：對角兩腳著地時，支撐區域退化成一條線段，質心投影通常不會落在上面。靜態平衡用三腳以上著地的步態來檢查。trot 需要的動態平衡，不要放到只有位置回授的 Mini Pupper 2 實機上當練習，見軟體路線 S10。
 
 ## 來源
 
 - 教科書與課程：Lynch & Park《Modern Robotics》、林沛群（臺大 OCW、個人課程頁）、楊谷洋（陽明交大 OCW）、Steve Brunton、Roger Labbe、Cyrill Stachniss、Steven LaValle、李宏毅、Hugging Face、OpenAI Spinning Up、MIT Underactuated Robotics（連結見各階段）
 - 共同載具：[Linorobot2](https://github.com/linorobot/linorobot2)、[linorobot2_hardware](https://github.com/linorobot/linorobot2_hardware)
 - 多旋翼：[Crazyflie state estimation](https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/functional-areas/sensor-to-control/state_estimators/)、[Explaining Kalman Filters with the Crazyflie](https://www.bitcraze.io/2024/01/explaining-kalman-filters-with-the-crazyflie/)、[`kalman_core.c`](https://github.com/bitcraze/crazyflie-firmware/blob/master/src/modules/src/kalman_core/kalman_core.c)、[out-of-tree build](https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/development/oot/)、[Adding an estimator or controller](https://www.bitcraze.io/2023/02/adding-an-estimator-or-controller/)、[Positioning systems](https://www.bitcraze.io/documentation/system/positioning/)、[PX4 controller diagrams](https://docs.px4.io/main/en/flight_stack/controller_diagrams)、[PX4 multicopter PID tuning (basic)](https://docs.px4.io/main/en/config_mc/pid_tuning_guide_multicopter_basic)、[PX4 EKF2](https://docs.px4.io/main/en/advanced_config/tuning_the_ecl_ekf)
+- 四足：[mini_pupper_ros 的 Kinematics.py](https://github.com/mangdangroboticsclub/mini_pupper_ros/blob/ros2-jazzy/stanford_controller/stanford_controller/Kinematics.py)、[Mini Pupper 文件](https://minipupperdocs.readthedocs.io/en/latest/)
