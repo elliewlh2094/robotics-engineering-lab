@@ -15,7 +15,7 @@
 
 - **目標深度**：做到「能自己組裝、能自己除錯」就好，不走 PCB 設計或電機控制器開發。
 
-- **查詢與連結驗證日期**：既有連結 2026-11-02（Asia/Taipei）。多旋翼相關連結 2026-11-07 另查過，可以開啟。
+- **查詢與連結驗證日期**：既有連結 2026-11-02（Asia/Taipei）。多旋翼相關連結 2026-11-07 另查過，可以開啟。四足相關連結 2026-11-08 另查過，可以開啟。
 
 - **時數全部是推測**，以「沒碰過電子／MCU」為起點估計。
 
@@ -40,7 +40,9 @@
   - **進階：Holybro X500 V2**（Pixhawk 6C）。組裝頁寫 4S、16.8 V、5200 mAh 電池，馬達預裝在機臂上，經電子調速器與電源分配板供電，GPS 接 GPS1，遙測接 TELEM1（來源：[Holybro X500 V2 + Pixhawk 6C](https://docs.px4.io/main/en/frames_multicopter/holybro_x500v2_pixhawk6c)）。這是無刷動力，和 AMR-1 的有刷馬達加 TB6612 不同。模擬模型的機體質量是 2.0 kg；組裝頁沒寫實體整機重量，大約落在 1.3 到 2 公斤（推測。來源：[x500_base/model.sdf](https://github.com/PX4/PX4-gazebo-models/blob/main/models/x500_base/model.sdf)）。組裝頁也沒寫螺旋槳吋別，學習上先把它當成約 10 吋槳的戶外機（推測）。
   - 電池從 1S 練到 4S，做法寫在 H2。1S 是單顆電芯；4S 才用平衡充電器。
 
-- 地面階段的「能做到」以 AMR-1 的子系統驗收，整機在 H7。多旋翼是 H10，做完 H1、H2 就能做，不用等 H7。
+- **選修四足：Mini Pupper 2**。不取代 AMR-1。這裡只寫組裝、伺服校正、光達固定與電源，對應 H11。步態與 Nav2 見軟體路線 S10，腿的運動學見知識路線 K2。
+
+- 地面階段的「能做到」以 AMR-1 的子系統驗收，整機在 H7。多旋翼是 H10，做完 H1、H2 就能做，不用等 H7。四足是 H11，同樣做完 H1、H2 就能做。
 
 ## 路線總覽
 
@@ -50,6 +52,7 @@
 | H1 | 基本電路與工具（三用電表、焊接） | 必修 | ~25h |
 | H2 | 電源與鋰電池安全 | 必修 | ~8h |
 | H10 | 多旋翼（Crazyflie、ESP-FLY；X500 另計） | 選修 | ~25h（X500 再約 20h） |
+| H11 | 四足：Mini Pupper 2 | 選修 | ~12h |
 | H3 | MCU：Arduino → ESP32 | 必修 | ~30h |
 | H4 | 馬達、驅動與感測器 | 必修 | ~30h |
 | H5 | 示波器除錯 | 必修 | ~6h |
@@ -58,7 +61,7 @@
 | H8 | SO-101 手臂組裝 | 選修 | ~20h |
 | H9 | 工業通訊：CAN、Modbus、MQTT | 選修 | ~20h |
 
-必修合計約 140h（推測）。H10 約 25h，實體 X500 V2 再約 20h，都不計入必修。編號用 H10，是為了不改 H3–H9。做完 H1、H2 就做 H10。
+必修合計約 140h（推測）。H10 約 25h，實體 X500 V2 再約 20h，H11 約 12h，都不計入必修。編號用 H10、H11，是為了不改既有階段。做完 H1、H2 就可以做 H10 或 H11。
 
 ## H0 模擬器暖身（選修，~5h）
 
@@ -84,7 +87,7 @@
 
 - [MIT EHS Lithium Battery Safety Guidance（PDF）](https://ehs.mit.edu/wp-content/uploads/2019/09/Lithium_Battery_Safety_Guidance.pdf)
 
-AMR-1 是 3S。多旋翼從 1S 練到 4S 的做法與驗收在 H10。
+AMR-1 是 3S。多旋翼從 1S 練到 4S 的做法與驗收在 H10。四足的外部電源不可超過 8.4 V，寫在 H11。
 
 - **能做到**：
   - [ ] 畫出 AMR-1 的電源樹：電池 → 保險絲／開關 → 馬達驅動；電池 → 降壓 5V → Pi／MCU，並標出共地
@@ -106,6 +109,23 @@ AMR-1 是 3S。多旋翼從 1S 練到 4S 的做法與驗收在 H10。
   - [ ] Crazyflie 2.1+ 組好，手控飛一次
   - [ ] 說得出 1S 與 4S 的差別，以及鼓包、受損電芯怎麼處理
   - [ ] （選）X500 V2 在 QGroundControl 完成校正，戶外用 GPS 定點懸停
+
+## H11 四足：Mini Pupper 2（選修，~12h）
+
+做完 H1、H2 再做，不用等 H7。用腿已經先組好的版本。軟體的步態與導航見軟體路線 S10。
+
+- **組裝**：[Assemble Mini Pupper 2](https://minipupperdocs.readthedocs.io/en/latest/guide/Assembly/MiniPupper2.html) 的標準套件從四條腿鎖上底板開始，接著是上板排線、喇叭與外殼。步驟是螺絲與接頭，頁面沒有焊接。
+- **架構**：規格表在 [Features](https://minipupperdocs.readthedocs.io/en/latest/guide/Features.html) 的圖裡（2026-11-08 查）。Mini Pupper 2 那一欄是 Raspberry Pi CM4、ESP32-S3、有位置回授的序列匯流排伺服、IMU、209×109×145 mm、465 g、額外負載 200 g。電池那一列寫 1000 mAh。[快速入門](https://minipupperdocs.readthedocs.io/en/latest/guide/QuickStartGuide.html) 寫這顆電池連續大約可以跑 30 分鐘。規格表是 465 g；另有使用紀錄在裝上電池後量到約 479 g，規格表沒寫重量含不含電池。
+- **伺服**：十二顆，每條腿三個關節，規格表只寫位置回授。機械設計頁附的伺服規格書（2021-10-26）是脈寬控制，6 V 堵轉扭力 3.5 kg·cm；那一頁的標題是 Mini Pupper，是第一代。把 3.5 kg·cm 套到 Mini Pupper 2 的序列匯流排伺服是推測。有速度與力矩回授的 Pro 版本，規格表現在沒有列，這條路線不採用（推測不好取得）。
+- **校正**：[Software Calibration](https://minipupperdocs.readthedocs.io/en/latest/guide/SoftwareCalibration.html) 的 Mini Pupper 2 小節。四條腿調到圖上的約 45° 再存檔。角度沒對齊就開步態，腳會打架或站不穩。
+- **光達**：文件寫官方程式只保證 STL-06P。組裝頁有固定座步驟；固定座的 STL 也公開，可以自己印。沒有光達就做不到 S10 的 SLAM 與 Nav2。
+- **電源**：快速入門寫，外部電源高於 8.4 V（文件寫成超過 2S）幾乎一定會燒掉所有伺服。規格表只寫 1000 mAh，沒寫串數；從 8.4 V 這個上限推測隨附電池是 2S。充電照文件走 5 V 的 USB，不要拿 H10 的 4S 平衡充電來充這顆，也不要拿 AMR-1 的 3S 接上去。
+- **一次一個 launch**：先單獨看 IMU（`imu_interface.launch.py`）和光達（`lidar_ld06.launch.py`）的 topic 有沒有資料。伺服在 Jazzy 的整機 bringup 走 `ros2_control`，以關節狀態為準；`servo_interface.launch.py` 是分開的驅動，不要和整機 bringup 疊在同一顆 ESP32 上一起開（推測會搶匯流排）。每一項都有資料，才啟動 `bringup.launch.py`。
+
+- **能做到**：
+  - [ ] 用腿已先組好的版本組完，沒有焊接，並做完伺服校正，四條腿的角度一致
+  - [ ] 說得出 CM4、ESP32-S3、十二顆位置回授伺服、IMU 與 1000 mAh 電池怎麼分工，以及為什麼外部電源不能超過 8.4 V
+  - [ ] 裝上 STL-06P 後，一次只開一個驅動，分別確認伺服、IMU、光達有資料，再啟動整機
 
 ## H3 MCU：Arduino → ESP32（必修，~30h）
 
@@ -203,6 +223,10 @@ AMR-1 是 3S。多旋翼從 1S 練到 4S 的做法與驗收在 H10。
 - **TELEM2 的 UART 是 3.3 V**：腳 1 的 VCC 是 5 V。不要把 5 V 接到 Raspberry Pi 的 GPIO。
 - **Crazyflie 的 29 g 來自 2.1 資料表**：路線上的第一台是 2.1+。2.1+ 若有自己的規格表，以那份為準。
 - **X500 的 2.0 kg 是模擬模型的機體質量**：組裝頁沒寫實體整機重量，也沒寫螺旋槳吋別。
+- **Mini Pupper 2 的外部電源上限是 8.4 V**：快速入門把高於 8.4 V 寫成超過 2S，並說幾乎一定會燒掉伺服。規格表沒寫電池串數，2S 是從這個上限推測的。不要接 3S 或 4S。
+- **3.5 kg·cm 來自第一代伺服規格書**：6 V 堵轉是 3.5 kg·cm，控制方式是脈寬。Mini Pupper 2 的規格表只寫序列匯流排與位置回授，沒有再列扭力。
+- **465 g 是規格表，479 g 不是**：規格表寫 465 g。裝上電池後約 479 g 來自一份使用紀錄，規格表沒有這個數字，也沒寫重量含不含電池。
+- **開源範圍**：板級支援套件 `mini_pupper_2_bsp` 的 README 寫 Apache-2.0，並把 `FuelGauge` 列成 GPL。組裝頁公開光達與相機固定座的 STL；[PCB 頁](https://minipupperdocs.readthedocs.io/en/latest/reference/PCB.html) 有電路板 schematic 的連結，頁面寫的是 Mini Pupper 客製板。[機械設計頁](https://minipupperdocs.readthedocs.io/en/latest/reference/Design.html) 的 Fusion 360、物料表與 STL 標題都是 Mini Pupper，是第一代。Mini Pupper 2 的機架 CAD 與硬體授權沒有公開。
 - **時數都是推測**。
 
 ## 來源
@@ -210,3 +234,4 @@ AMR-1 是 3S。多旋翼從 1S 練到 4S 的做法與驗收在 H10。
 - 共同載具：[Linorobot2](https://github.com/linorobot/linorobot2)、[linorobot2_hardware](https://github.com/linorobot/linorobot2_hardware)、[linorobot2_hardware wiki](https://github.com/linorobot/linorobot2_hardware/wiki)、[Linorobot2 docs](https://linorobot.github.io/linorobot2/)
 - 教材：SparkFun、Adafruit、Random Nerd Tutorials、DroneBot Workshop、toptechboy、Onshape、Teaching Tech、OrcaSlicer、CSS Electronics、Espressif ESP-IDF、Linux kernel docs、Modbus Organization、PyModbus、HiveMQ、Eclipse Mosquitto（連結見各階段）
 - 多旋翼：[ESP-FLY](https://github.com/Seeed-Projects/Co-Create_ESP-FLY)、[ESP-Drone](https://github.com/espressif/esp-drone)、[Crazyflie 2.x getting started](https://www.bitcraze.io/documentation/tutorials/getting-started-with-crazyflie-2-x/)、[Crazyflie 2.1 datasheet](https://www.bitcraze.io/documentation/hardware/crazyflie_2_1/crazyflie_2_1-datasheet.pdf)、[Holybro X500 V2](https://docs.px4.io/main/en/frames_multicopter/holybro_x500v2_pixhawk6c)、[Raspberry Pi companion](https://docs.px4.io/main/en/companion_computer/pixhawk_rpi)
+- 四足：[Mini Pupper 文件](https://minipupperdocs.readthedocs.io/en/latest/)、[Features](https://minipupperdocs.readthedocs.io/en/latest/guide/Features.html)、[組裝](https://minipupperdocs.readthedocs.io/en/latest/guide/Assembly/MiniPupper2.html)、[校正](https://minipupperdocs.readthedocs.io/en/latest/guide/SoftwareCalibration.html)、[快速入門](https://minipupperdocs.readthedocs.io/en/latest/guide/QuickStartGuide.html)、[機械設計](https://minipupperdocs.readthedocs.io/en/latest/reference/Design.html)、[PCB](https://minipupperdocs.readthedocs.io/en/latest/reference/PCB.html)、[mini_pupper_2_bsp](https://github.com/mangdangroboticsclub/mini_pupper_2_bsp)

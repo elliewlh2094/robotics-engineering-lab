@@ -9,7 +9,7 @@ Claude Code 請先讀這份文件。若你是從 `CLAUDE.md` 進來的，內容�
 - 這**不是**作品集或展示空間。
 - 目標是誠實紀錄真實能力，而不是看起來很厲害。
 - 小練習直接放在本儲存庫；較完整的練習專案用 git submodule。
-- 上游專案（Linorobot2、Nav2、SO-101、Crazyflie、PX4 官方 repo 等）當依賴安裝，不要整包搬進來。只有使用者自己改過或新寫的設定、外掛、筆記才放進這裡或自己的 submodule。
+- 上游專案（Linorobot2、Nav2、SO-101、Crazyflie、PX4、mini_pupper_ros、CHAMP 官方 repo 等）當依賴安裝，不要整包搬進來。只有使用者自己改過或新寫的設定、外掛、筆記才放進這裡或自己的 submodule。
 
 ## 使用者背景
 
@@ -35,7 +35,7 @@ Claude Code 請先讀這份文件。若你是從 `CLAUDE.md` 進來的，內容�
 | [docs/hardware-learning-path.md](docs/hardware-learning-path.md) | 怎麼接、怎麼組：電路、MCU、馬達、整機、工業通訊 |
 | [docs/robotics-theory-learning-path.md](docs/robotics-theory-learning-path.md) | 為什麼：運動學、控制、機率機器人學、規劃 |
 
-三條路線共用載具 **AMR-1**（Linorobot2 2WD），選修第二台是 **SO-101**，選修多旋翼是 **Crazyflie 2.1+** 與 **PX4 的 Holybro X500**（先模擬 `gz_x500`；實體 X500 V2 與焊接練習 ESP-FLY 見各路線）。
+三條路線共用載具 **AMR-1**（Linorobot2 2WD），選修第二台是 **SO-101**，選修多旋翼是 **Crazyflie 2.1+** 與 **PX4 的 Holybro X500**（先模擬 `gz_x500`；實體 X500 V2 與焊接練習 ESP-FLY 見各路線），選修四足是 **Mini Pupper 2**。
 
 ## 怎麼跟 submodule 一起工作
 
