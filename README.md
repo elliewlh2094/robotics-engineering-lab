@@ -31,6 +31,7 @@
 
 - **AMR-1**：依 [Linorobot2](https://github.com/linorobot/linorobot2) 自組的 2WD 差速 AMR（主軸）
 - **SO-101**：機械手臂（選修第二台）
+- **多旋翼（選修）**：Crazyflie 2.1+ 是第一台；接著用 PX4 在 Gazebo 跑 Holybro X500（模型 `gz_x500`）。實體 X500 V2，以及拿來練焊接的 ESP-FLY，寫在學習路線裡。不取代 AMR-1。
 
 ## Submodule
 

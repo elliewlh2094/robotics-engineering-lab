@@ -15,7 +15,7 @@
 
 - **目標深度**：做到「能自己組裝、能自己除錯」就好，不走 PCB 設計或電機控制器開發。
 
-- **查詢與連結驗證日期**：2026-11-02（Asia/Taipei）。
+- **查詢與連結驗證日期**：既有連結 2026-11-02（Asia/Taipei）。多旋翼相關連結 2026-11-07 另查過，可以開啟。
 
 - **時數全部是推測**，以「沒碰過電子／MCU」為起點估計。
 
@@ -34,7 +34,13 @@
 
 - **選修第二台：SO-101 手臂**（[SO-ARM100 repo](https://github.com/TheRobotStudio/SO-ARM100)、[LeRobot SO-101 文件](https://huggingface.co/docs/lerobot/so101)），只用在 H8。
 
-- 每個階段的「能做到」都以 AMR-1 的某個子系統驗收，最後在 H7 組成整機。
+- **選修多旋翼**：不取代 AMR-1。軟體與演算法見另外兩條路線，這裡只寫組裝、焊接、電池與動力。
+  - **焊接練習：ESP-FLY**（Seeed，XIAO ESP32-S3，1S）。README 的重量是約 18 g／25 g／28 g（不含鋰聚合物電池／含電池／再加 FPV 鏡頭）。要焊 XIAO 與馬達線。韌體是改過的 ESP-Drone，沒有 ROS 2、沒有模擬，所以停在硬體練習（來源：[Co-Create_ESP-FLY](https://github.com/Seeed-Projects/Co-Create_ESP-FLY)，2026-11-07 查）。第一台飛行載具是下面的 Crazyflie 2.1+。
+  - **第一台：Crazyflie 2.1+**（Bitcraze，1S）。[Getting started with the Crazyflie 2.x](https://www.bitcraze.io/documentation/tutorials/getting-started-with-crazyflie-2-x/) 涵蓋 2.1 與 2.1+，步驟是裝電池與螺旋槳、擴充板插上。[Crazyflie 2.1 資料表 Rev 3](https://www.bitcraze.io/documentation/hardware/crazyflie_2_1/crazyflie_2_1-datasheet.pdf) 寫起飛重量 29 g、附 250 mAh 電池、組裝不用焊接（2026-11-07 查。2.1+ 沒有另找到規格表，重量先用這份）。
+  - **進階：Holybro X500 V2**（Pixhawk 6C）。組裝頁寫 4S、16.8 V、5200 mAh 電池，馬達預裝在機臂上，經電子調速器與電源分配板供電，GPS 接 GPS1，遙測接 TELEM1（來源：[Holybro X500 V2 + Pixhawk 6C](https://docs.px4.io/main/en/frames_multicopter/holybro_x500v2_pixhawk6c)）。這是無刷動力，和 AMR-1 的有刷馬達加 TB6612 不同。模擬模型的機體質量是 2.0 kg；組裝頁沒寫實體整機重量，大約落在 1.3 到 2 公斤（推測。來源：[x500_base/model.sdf](https://github.com/PX4/PX4-gazebo-models/blob/main/models/x500_base/model.sdf)）。組裝頁也沒寫螺旋槳吋別，學習上先把它當成約 10 吋槳的戶外機（推測）。
+  - 電池從 1S 練到 4S，做法寫在 H2。1S 是單顆電芯；4S 才用平衡充電器。
+
+- 地面階段的「能做到」以 AMR-1 的子系統驗收，整機在 H7。多旋翼是 H10，做完 H1、H2 就能做，不用等 H7。
 
 ## 路線總覽
 
@@ -43,6 +49,7 @@
 | H0 | 免費模擬器暖身（不用買零件） | 選修 | ~5h |
 | H1 | 基本電路與工具（三用電表、焊接） | 必修 | ~25h |
 | H2 | 電源與鋰電池安全 | 必修 | ~8h |
+| H10 | 多旋翼（Crazyflie、ESP-FLY；X500 另計） | 選修 | ~25h（X500 再約 20h） |
 | H3 | MCU：Arduino → ESP32 | 必修 | ~30h |
 | H4 | 馬達、驅動與感測器 | 必修 | ~30h |
 | H5 | 示波器除錯 | 必修 | ~6h |
@@ -51,7 +58,7 @@
 | H8 | SO-101 手臂組裝 | 選修 | ~20h |
 | H9 | 工業通訊：CAN、Modbus、MQTT | 選修 | ~20h |
 
-必修合計約 140h（推測）。
+必修合計約 140h（推測）。H10 約 25h，實體 X500 V2 再約 20h，都不計入必修。編號用 H10，是為了不改 H3–H9。做完 H1、H2 就做 H10。
 
 ## H0 模擬器暖身（選修，~5h）
 
@@ -71,13 +78,34 @@
   - [ ] 用三用電表量出 AMR-1 電池電壓、降壓模組輸出，並檢查短路
   - [ ] 幫 IMU／馬達驅動模組焊上排針，焊點合格
 
+整機的焊接練習是 H10 的 ESP-FLY。這裡先把排針焊好。
+
 ## H2 電源與鋰電池安全（必修，~8h）
 
 - [MIT EHS Lithium Battery Safety Guidance（PDF）](https://ehs.mit.edu/wp-content/uploads/2019/09/Lithium_Battery_Safety_Guidance.pdf)
 
+AMR-1 是 3S。多旋翼從 1S 練到 4S 的做法與驗收在 H10。
+
 - **能做到**：
   - [ ] 畫出 AMR-1 的電源樹：電池 → 保險絲／開關 → 馬達驅動；電池 → 降壓 5V → Pi／MCU，並標出共地
   - [ ] 說得出鋰電池充電、存放、過放與膨脹時的處理方式
+
+## H10 多旋翼（選修，~25h；X500 再約 20h）
+
+做完 H1、H2 再做，不用等 H7。第一台飛行載具是 Crazyflie 2.1+。ESP-FLY 是焊接練習。軟體的 ROS 2 飛行 node 見軟體路線 S9。
+
+- **ESP-FLY**（[Co-Create_ESP-FLY](https://github.com/Seeed-Projects/Co-Create_ESP-FLY)）：XIAO ESP32-S3、四顆空心杯馬達、1S 250 mAh，含電池約 25 g。要焊 XIAO 與馬達線。燒錄用 `idf.py -p PORT flash monitor`（`PORT` 換成實際序列埠）。韌體 README 寫開發環境是 ESP-IDF release/v4.4（2026-11-07 查）。韌體改自 [ESP-Drone](https://github.com/espressif/esp-drone) 與 Circuit Digest 的修改版，飛行控制核心來自 Crazyflie 韌體 2021.01。沒有 ROS 2、沒有模擬。repo 裡另有一套偏 Betaflight 的流程，這條路線不走那套。驗收是手機 App 控制懸停。
+- **Crazyflie 2.1+**：[Getting started with the Crazyflie 2.x](https://www.bitcraze.io/documentation/tutorials/getting-started-with-crazyflie-2-x/) 涵蓋 2.1 與 2.1+，步驟是裝電池與螺旋槳、擴充板插上，不用焊接。[Crazyflie 2.1 資料表 Rev 3](https://www.bitcraze.io/documentation/hardware/crazyflie_2_1/crazyflie_2_1-datasheet.pdf) 寫起飛重量 29 g、附 250 mAh 電池。驗收是手控飛一次。
+- **鋰聚合物電池**：先養成 1S 的習慣，再碰到 4S。1S 是單顆電芯，Crazyflie 入門文件是接上電池後用 micro-USB 充，這個充法不要拿去充 4S。4S 標稱 14.8 V（充飽 16.8 V），這條路線用 3000–5000 mAh 這一級；[X500 V2 組裝頁](https://docs.px4.io/main/en/frames_multicopter/holybro_x500v2_pixhawk6c) 的例子是 4S、16.8 V、5200 mAh，略高於這個範圍，接法相同。4S 用平衡充電器。充電放在防火袋裡，人不要離開。久放先放到存放電壓。鼓包或受損的電芯退出，不要再充、不要再裝上飛。
+- **Holybro X500 V2（選，再約 20h）**：2216 KV920 無刷馬達、20A 電子調速器、PM02 電源模組、電源分配板、Pixhawk 6C、GPS、SiK 遙測。組裝不用焊接。組裝頁寫了 PM02、電源分配板、電子調速器接 PWM、GPS 接 GPS1、遙測接 TELEM1，馬達出廠已裝在機臂上。2216 KV920 與 20A 組裝頁沒寫，是這條路線採用的規格（推測）。[Raspberry Pi companion 接線](https://docs.px4.io/main/en/companion_computer/pixhawk_rpi) 裡 TELEM2 的 UART TX／RX 是 3.3 V，腳 1 的 VCC 是 5 V。接到伴隨電腦時先對邏輯準位，不要把 5 V 接到 GPIO。ROS 2 見軟體路線 S9。校正用組裝頁寫的 QGroundControl。
+
+戶外飛行前先遵守當地的無人機規範。
+
+- **能做到**：
+  - [ ] ESP-FLY 焊好並燒錄，用手機 App 控制懸停
+  - [ ] Crazyflie 2.1+ 組好，手控飛一次
+  - [ ] 說得出 1S 與 4S 的差別，以及鼓包、受損電芯怎麼處理
+  - [ ] （選）X500 V2 在 QGroundControl 完成校正，戶外用 GPS 定點懸停
 
 ## H3 MCU：Arduino → ESP32（必修，~30h）
 
@@ -170,9 +198,15 @@
 - **ESP32-S3**：linorobot2_hardware jazzy README 已列出 `esp32s3` 環境（2026-11-02 查），但 IMU、驅動腳位要照 config 檔自己對應。
 - **ESP32 的 TWAI 需要外接 CAN 收發器**（如 SN65HVD230）才能接上 CAN bus。
 - **Raspberry Pi**：Linorobot2 用 Pi 4 4GB 就夠跑（Pi 4 是最低需求）。
+- **1S 與 4S 不要混充**：Crazyflie 的 micro-USB 充電是 1S。X500 V2 的 4S 用平衡充電器。接頭與充電器分開。細節在 H10。
+- **焊接只強制在 ESP-FLY**：Crazyflie 2.1 資料表寫不用焊接。X500 V2 組裝頁是鎖螺絲與接插頭，馬達已裝在機臂上。
+- **TELEM2 的 UART 是 3.3 V**：腳 1 的 VCC 是 5 V。不要把 5 V 接到 Raspberry Pi 的 GPIO。
+- **Crazyflie 的 29 g 來自 2.1 資料表**：路線上的第一台是 2.1+。2.1+ 若有自己的規格表，以那份為準。
+- **X500 的 2.0 kg 是模擬模型的機體質量**：組裝頁沒寫實體整機重量，也沒寫螺旋槳吋別。
 - **時數都是推測**。
 
 ## 來源
 
 - 共同載具：[Linorobot2](https://github.com/linorobot/linorobot2)、[linorobot2_hardware](https://github.com/linorobot/linorobot2_hardware)、[linorobot2_hardware wiki](https://github.com/linorobot/linorobot2_hardware/wiki)、[Linorobot2 docs](https://linorobot.github.io/linorobot2/)
 - 教材：SparkFun、Adafruit、Random Nerd Tutorials、DroneBot Workshop、toptechboy、Onshape、Teaching Tech、OrcaSlicer、CSS Electronics、Espressif ESP-IDF、Linux kernel docs、Modbus Organization、PyModbus、HiveMQ、Eclipse Mosquitto（連結見各階段）
+- 多旋翼：[ESP-FLY](https://github.com/Seeed-Projects/Co-Create_ESP-FLY)、[ESP-Drone](https://github.com/espressif/esp-drone)、[Crazyflie 2.x getting started](https://www.bitcraze.io/documentation/tutorials/getting-started-with-crazyflie-2-x/)、[Crazyflie 2.1 datasheet](https://www.bitcraze.io/documentation/hardware/crazyflie_2_1/crazyflie_2_1-datasheet.pdf)、[Holybro X500 V2](https://docs.px4.io/main/en/frames_multicopter/holybro_x500v2_pixhawk6c)、[Raspberry Pi companion](https://docs.px4.io/main/en/companion_computer/pixhawk_rpi)
