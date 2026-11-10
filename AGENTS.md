@@ -62,7 +62,7 @@ Claude Code 請先讀這份文件。若你是從 `CLAUDE.md` 進來的，內容�
 Co-Authored-By: <代理名稱> <email>
 ```
 
-- **標題**：`<類型>: <摘要>`。摘要用繁體中文寫出這次提交做了什麼，結尾不加句號，整行不超過 50 個字元。
+- **標題**：`<類型>: <摘要>`。摘要用繁體中文寫出這次提交做了什麼，結尾不加句號，整行盡量不超過 50 個字元，最多 72 個字元（超過 72 GitHub 會截斷）。中文字一個算一個字元，但畫面上佔兩格寬，所以中文標題盡量在 25 個中文字左右（推測）。依據：[git-commit 的 DISCUSSION](https://git-scm.com/docs/git-commit)、[Shiny new commit styles](https://github.blog/news-insights/shiny-new-commit-styles/)、[Using Git on GitHub Docs](https://github.com/github/docs/blob/main/content/contributing/collaborating-on-github-docs/using-git-on-github-docs.md)。
 - **類型**只用以下幾種：
   - `feat`：新增功能，例如新的 skill、腳本。
   - `fix`：修正錯誤或規則漏洞。
@@ -86,9 +86,9 @@ Co-Authored-By: <代理名稱> <email>
 
 ### 提交與推送
 
-1. 代理完成變更後，先列出要提交的檔案與完整的提交訊息給使用者看。
-2. 使用者同意後才提交。使用者修改了訊息時，用使用者修改後的版本。修正提交（amend）也一樣先給使用者看。
-3. 推送只由使用者執行。代理不要 `git push`，也不要詢問或建議推送。
+1. 代理完成變更後，先列出要提交的檔案與完整的提交訊息給使用者看。雲端代理（例如 Cursor 雲端代理）的 pull request 就是審查步驟：使用者事先指示的變更，可以直接提交到該 pull request 分支，由使用者在合併前審查。
+2. 使用者同意後才提交。使用者修改了訊息時，用使用者修改後的版本。修正提交（amend）也一樣先給使用者看。雲端代理依第 1 點，直接提交到 pull request 分支。
+3. 推送只由使用者執行。代理不要 `git push`，也不要詢問或建議推送。例外：雲端代理透過自己開的 pull request 分支修改這個儲存庫時，可以推送那個分支。main 只由使用者合併；任何代理都不能推送到 main，也不能合併 pull request。在本機工作的代理（例如 Claude Code、Codex）仍不推送。
 
 ## Issues
 
